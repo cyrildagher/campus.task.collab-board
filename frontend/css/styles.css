@@ -1,0 +1,96 @@
+body{
+    margin: 0; 
+    font-family: 'Inter', Arial, sans-serif; 
+    background-color: #f2f4f7
+}
+
+/* for the app title and the logout button */
+.navbar {
+    background: #fff;
+    padding: 15px 25px; 
+    border-bottom: 1px solid #ddd; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items:center;
+}
+
+.page-title{
+    padding: 20px 25 10px; 
+    font-weight: 600
+}
+
+.board{
+    display:flex; 
+    gap: 15px; 
+    padding: 0 20px 20px; 
+    overflow-x: auto; /*this is to allow horizontal scrolling on smaller screens*/
+}
+
+.column {
+    background: #f8f9fb;
+    border-radius: 8px; 
+    border: 10px; 
+    min-width: 280px; 
+}
+
+.column-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 10px; 
+    font-weight: 500;
+}
+
+/* Plus (+) button in the column header  */
+.column-header button {
+    border: none; 
+    background: #4f46e5; 
+    color: white; 
+    padding: 4px 10px; 
+    padding: 4px 10px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+}
+
+/* Area where the task cards appea */
+.task-list {
+    min-height: 20px; 
+}
+
+/* individual task card */ 
+.task {
+    background: white; 
+    padding: 10px; 
+    border-radius: 6px; 
+    margin-bottom: 10px; 
+    border: 1px solid #e5e7eb; 
+}
+
+/* Task Ttitle */
+.task h4 {
+    margin: 0 0 5px; 
+    font-size: 14px; 
+    font-weight: 600;
+}
+
+/* Task Description */
+.task p{
+    margin: 0; 
+    font-size: 13px; 
+    color: #555;
+}
+
+.task button {
+    margin-top: 8px; 
+    font-size: 12px; 
+    padding: 4px 8px; 
+    cursor: pointer;
+}
+
+
+/* Respondive adustments to keep layout usable on phones */
+@media (max-width: 769px) {
+    .board {
+        padding: 10px; 
+    }
+}
