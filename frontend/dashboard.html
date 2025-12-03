@@ -5,30 +5,273 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tasks Board</title>
     <link rel="stylesheet" href="css/styles.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
 </head>
 <body>
-    <div class="navbar">
-        <h3>Campus Task Collaboration Board</h3>
-        <button id="logoutBtn">Logout</button>
-    </div>
-
-    <h2 class="page-title">Tasks Board</h2>
-
-    <div class="board">
-        <div class="column">
-            <div class="column-header">
-                <span>To Do</span>
-                <button onclick="addTask('to-do')">+</button>
+    <!-- top navigation bar -->
+    <div class="top-nav">
+        <div class="nav-left">
+            <div class="logo">t.</div>
+            <nav class="main-nav">
+                <a href="#" class="nav-link">Start</a>
+                <a href="#" class="nav-link active">Projects</a>
+                <a href="#" class="nav-link">Planning</a>
+            </nav>
+        </div>
+        <div class="nav-right">
+            <button class="icon-btn" title="Search">⌕</button>
+            <button class="icon-btn" title="Add">+</button>
+            <div class="user-menu">
+                <div class="user-avatar-placeholder">U</div>
+                <span class="dropdown-arrow">▼</span>
             </div>
-            <div id="todo" class="task-list"></div>
         </div>
     </div>
 
-    <script scr="js/board.js"></script>
+    <!-- secondary navigation -->
+    <div class="secondary-nav">
+        <h1 class="board-title">Tasks Board</h1>
+        <div class="sub-nav">
+            <a href="#" class="sub-nav-link">Overview</a>
+            <a href="#" class="sub-nav-link active">Tasks</a>
+            <a href="#" class="sub-nav-link">Milestones</a>
+        </div>
+    </div>
+
+    <!-- kanban board -->
+    <div class="board">
+        <!-- Academics column -->
+        <div class="column">
+            <div class="column-header">
+                <span>Academics</span>
+                <button class="add-btn">+</button>
+            </div>
+            <div class="task-list">
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Research Paper</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Complete literature review for final project</p>
+                    <div class="task-tags">
+                        <span class="tag tag-yellow">High Priority</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>2</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                            <span class="progress-text">45%</span>
+                        </div>
+                        <div class="task-time">Est. 8h 15m</div>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Lab Report</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Write up chemistry experiment results</p>
+                    <div class="task-tags">
+                        <span class="tag tag-green">Due Soon</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>3</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                            <span class="progress-text">60%</span>
+                        </div>
+                        <div class="task-time">Est. 4h 30m</div>
+                    </div>
+                </div>
+            </div>
+            <button class="add-card-btn">+ Add a Task</button>
+        </div>
+
+        <!-- Recreational column -->
+        <div class="column">
+            <div class="column-header">
+                <span>Recreational</span>
+                <button class="add-btn">+</button>
+            </div>
+            <div class="task-list">
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Game Night</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Organize board games event for student club</p>
+                    <div class="task-tags">
+                        <span class="tag tag-green">Planning</span>
+                        <span class="tag tag-purple-light">Social</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>5</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%"></div>
+                            </div>
+                            <span class="progress-text">30%</span>
+                        </div>
+                        <div class="task-time">Est. 6h 00m</div>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Movie Screening</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Set up outdoor movie night at campus</p>
+                    <div class="task-tags">
+                        <span class="tag tag-purple">Entertainment</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>8</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 20%"></div>
+                            </div>
+                            <span class="progress-text">20%</span>
+                        </div>
+                        <div class="task-time">Est. 5h 00m</div>
+                    </div>
+                </div>
+            </div>
+            <button class="add-card-btn">+ Add a Task</button>
+        </div>
+
+        <!-- Sports column -->
+        <div class="column">
+            <div class="column-header">
+                <span>Sports</span>
+                <button class="add-btn">+</button>
+            </div>
+            <div class="task-list">
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Basketball Tournament</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Coordinate inter-department basketball competition</p>
+                    <div class="task-tags">
+                        <span class="tag tag-yellow">Urgent</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>12</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                            <span class="progress-text">75%</span>
+                        </div>
+                        <div class="task-time">Est. 10h 00m</div>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Fitness Class</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Schedule weekly yoga sessions at gym</p>
+                    <div class="task-tags">
+                        <span class="tag tag-green">Regular</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>4</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%"></div>
+                            </div>
+                            <span class="progress-text">90%</span>
+                        </div>
+                        <div class="task-time">Est. 3h 00m</div>
+                    </div>
+                </div>
+            </div>
+            <button class="add-card-btn">+ Add a Task</button>
+        </div>
+
+        <!-- Events column -->
+        <div class="column">
+            <div class="column-header">
+                <span>Events</span>
+                <button class="add-btn">+</button>
+            </div>
+            <div class="task-list">
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Spring Festival</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Plan annual campus spring celebration event</p>
+                    <div class="task-tags">
+                        <span class="tag tag-teal">Major Event</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>15</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 50%"></div>
+                            </div>
+                            <span class="progress-text">50%</span>
+                        </div>
+                        <div class="task-time">Est. 20h 00m</div>
+                    </div>
+                </div>
+                <div class="task-card">
+                    <div class="task-header">
+                        <input type="checkbox" class="task-checkbox">
+                        <h4>Career Fair</h4>
+                        <span class="task-menu">⋯</span>
+                    </div>
+                    <p class="task-desc">Organize company recruitment event</p>
+                    <div class="task-tags">
+                        <span class="tag tag-yellow">Important</span>
+                    </div>
+                    <div class="task-footer">
+                        <div class="task-comments">
+                            <span>9</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 35%"></div>
+                            </div>
+                            <span class="progress-text">35%</span>
+                        </div>
+                        <div class="task-time">Est. 15h 00m</div>
+                    </div>
+                </div>
+            </div>
+            <button class="add-card-btn">+ Add a Task</button>
+        </div>
+    </div>
+
+    <script src="js/tasks.js"></script>
 </body>
 </html>
