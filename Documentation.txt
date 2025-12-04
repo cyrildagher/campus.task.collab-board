@@ -1,0 +1,680 @@
+================================================================================
+                    CAMPUS TASK COLLABORATION BOARD
+                         PROJECT DOCUMENTATION
+================================================================================
+
+Project Name: Campus Task Collaboration Board
+Developer: Cyril Michael Dagher
+Student ID: 10012300026
+Date: 2024
+
+================================================================================
+                            TABLE OF CONTENTS
+================================================================================
+
+1. Project Overview
+2. Project Objectives
+3. Features and Functionality
+4. Technology Stack
+5. System Architecture
+6. Database Design
+7. API Documentation
+8. Frontend Implementation
+9. Backend Implementation
+10. Security Features
+11. Installation and Setup
+12. Usage Guide
+13. Testing
+14. Challenges and Solutions
+15. Future Enhancements
+16. Conclusion
+
+================================================================================
+                          1. PROJECT OVERVIEW
+================================================================================
+
+The Campus Task Collaboration Board is a full-stack web application designed
+to help manage and allocate tasks around the university campus. The application
+provides a Kanban-style board interface where users can create, organize, and
+track tasks across different categories: Academics, Recreational, Sports, and
+Events.
+
+The system enables students and staff to collaborate effectively by providing
+a centralized platform for task management with features such as task creation,
+categorization, completion tracking, and task organization.
+
+================================================================================
+                        2. PROJECT OBJECTIVES
+================================================================================
+
+Primary Objectives:
+- Create a user-friendly task management system for campus activities
+- Implement secure user authentication and authorization
+- Provide an intuitive Kanban board interface for task visualization
+- Enable task categorization across different campus activity types
+- Support task completion tracking and organization
+- Implement a RESTful API for backend operations
+- Ensure data persistence using PostgreSQL database
+
+================================================================================
+                     3. FEATURES AND FUNCTIONALITY
+================================================================================
+
+3.1 User Authentication
+   - User registration with email validation
+   - Secure login with password hashing
+   - Session management using JWT tokens
+   - Protected routes requiring authentication
+
+3.2 Task Management
+   - Create new tasks with title, description, category, tags, and time estimate
+   - View tasks in Kanban board format organized by category
+   - Update task status (completed/pending)
+   - Delete tasks with confirmation modal
+   - Filter tasks by category (Academics, Recreational, Sports, Events)
+   - Track completed tasks in a separate section
+
+3.3 Dashboard Features
+   - Overview page with task statistics
+   - Projects view with Kanban board
+   - Completed tasks section
+   - Milestones tracking
+   - Planning page with upcoming tasks and tips
+   - User profile dropdown with logout functionality
+
+3.4 User Interface
+   - Responsive design for different screen sizes
+   - Modern, minimal UI with clean aesthetics
+   - Modal windows for task creation and deletion
+   - Intuitive navigation between different views
+   - Real-time task updates
+
+================================================================================
+                          4. TECHNOLOGY STACK
+================================================================================
+
+Frontend Technologies:
+- HTML5: Structure and semantic markup
+- CSS3: Styling and responsive design
+- JavaScript (ES6+): Client-side logic and DOM manipulation
+- Fetch API: HTTP requests to backend
+- LocalStorage: Client-side data caching
+
+Backend Technologies:
+- Node.js: JavaScript runtime environment
+- Express.js: Web application framework
+- PostgreSQL: Relational database management system
+- bcryptjs: Password hashing library
+- CORS: Cross-origin resource sharing middleware
+- dotenv: Environment variable management
+
+Development Tools:
+- Nodemon: Automatic server restart during development
+- Git: Version control system
+- Thunder Client/Postman: API testing
+
+Database:
+- PostgreSQL (hosted on Render)
+- Connection pooling for efficient database connections
+
+================================================================================
+                        5. SYSTEM ARCHITECTURE
+================================================================================
+
+The application follows a three-tier architecture:
+
+5.1 Presentation Layer (Frontend)
+   - HTML pages (index.html, dashboard.html)
+   - CSS stylesheets (styles.css, login.css)
+   - JavaScript modules:
+     * api.js: API communication layer
+     * auth.js: Authentication logic
+     * tasks.js: Task management logic
+     * dashboard.js: Dashboard UI and navigation
+
+5.2 Application Layer (Backend)
+   - Express.js server (server.js)
+   - RESTful API endpoints
+   - Authentication middleware
+   - Business logic for task operations
+   - Database connection management (config/db.js)
+
+5.3 Data Layer (Database)
+   - PostgreSQL database
+   - Tables: users, tasks
+   - Relationships and constraints
+
+Data Flow:
+1. User interacts with frontend UI
+2. Frontend makes API calls via fetch
+3. Backend processes requests and queries database
+4. Database returns data
+5. Backend sends JSON response
+6. Frontend updates UI dynamically
+
+================================================================================
+                          6. DATABASE DESIGN
+================================================================================
+
+6.1 Users Table
+   - id: SERIAL PRIMARY KEY
+   - name: VARCHAR(255) NOT NULL
+   - email: VARCHAR(255) UNIQUE NOT NULL
+   - password: VARCHAR(255) NOT NULL (hashed)
+   - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+6.2 Tasks Table
+   - id: SERIAL PRIMARY KEY
+   - title: VARCHAR(255) NOT NULL
+   - description: TEXT
+   - category: VARCHAR(50) NOT NULL
+   - tags: TEXT[] (array of strings)
+   - time: VARCHAR(50) DEFAULT '1h 00m'
+   - completed: BOOLEAN DEFAULT FALSE
+   - comments: INTEGER DEFAULT 0
+   - user_id: INTEGER REFERENCES users(id)
+   - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+Database Relationships:
+- One-to-Many: One user can have many tasks
+- Foreign key constraint on tasks.user_id references users.id
+
+================================================================================
+                        7. API DOCUMENTATION
+================================================================================
+
+Base URL: http://localhost:3000/api
+
+7.1 Authentication Endpoints
+
+POST /api/auth/register
+   Description: Register a new user
+   Request Body:
+     {
+       "name": "string",
+       "email": "string",
+       "password": "string"
+     }
+   Response (201):
+     {
+       "message": "User created successfully",
+       "user": { "id": number, "name": "string", "email": "string" }
+     }
+   Error (400): "Email already registered" or "All fields are required"
+   Error (500): "Server error"
+
+POST /api/auth/login
+   Description: Authenticate user and return token
+   Request Body:
+     {
+       "email": "string",
+       "password": "string"
+     }
+   Response (200):
+     {
+       "token": "string",
+       "user": { "id": number, "name": "string", "email": "string" }
+     }
+   Error (401): "Invalid credentials"
+   Error (500): "Server error"
+
+7.2 Task Endpoints
+
+GET /api/tasks
+   Description: Retrieve all tasks
+   Headers: Authorization: Bearer <token> (optional)
+   Response (200): Array of task objects
+   Error (500): "Server error"
+
+POST /api/tasks
+   Description: Create a new task
+   Headers: Authorization: Bearer <token> (optional)
+   Request Body:
+     {
+       "title": "string",
+       "description": "string",
+       "category": "string",
+       "tags": ["string"],
+       "time": "string"
+     }
+   Response (201): Task object
+   Error (400): "Title and category are required"
+   Error (500): "Server error"
+
+PUT /api/tasks/:id
+   Description: Update an existing task
+   Headers: Authorization: Bearer <token> (optional)
+   Request Body: (all fields optional)
+     {
+       "title": "string",
+       "description": "string",
+       "category": "string",
+       "tags": ["string"],
+       "time": "string",
+       "completed": boolean,
+       "comments": number
+     }
+   Response (200): Updated task object
+   Error (404): "Task not found"
+   Error (500): "Server error"
+
+DELETE /api/tasks/:id
+   Description: Delete a task
+   Headers: Authorization: Bearer <token> (optional)
+   Response (200): { "message": "Task deleted" }
+   Error (404): "Task not found"
+   Error (500): "Server error"
+
+7.3 Health Check
+
+GET /api/health
+   Description: Check server status
+   Response (200): { "status": "ok", "message": "Server is running" }
+
+================================================================================
+                      8. FRONTEND IMPLEMENTATION
+================================================================================
+
+8.1 File Structure
+   frontend/
+   ├── index.html          # Login/Registration page
+   ├── dashboard.html       # Main dashboard page
+   ├── css/
+   │   ├── styles.css      # Main dashboard styles
+   │   └── login.css       # Login page styles
+   └── js/
+       ├── api.js          # API communication utilities
+       ├── auth.js         # Authentication logic
+       ├── tasks.js        # Task management logic
+       └── dashboard.js    # Dashboard navigation and UI
+
+8.2 Key Components
+
+Login Page (index.html):
+   - Registration form with name, email, password
+   - Login form with email and password
+   - Form validation
+   - Error handling and user feedback
+
+Dashboard (dashboard.html):
+   - Top navigation bar with logo and main navigation
+   - Secondary navigation for Projects sub-views
+   - Kanban board with four columns (Academics, Recreational, Sports, Events)
+   - Task cards with checkbox, title, description, tags, time estimate
+   - Modal windows for task creation and deletion
+   - Multiple view sections (Start, Projects, Completed, Milestones, Overview, Planning)
+
+8.3 JavaScript Modules
+
+api.js:
+   - Centralized API configuration
+   - Helper function for authenticated requests
+   - authAPI object with register/login methods
+   - tasksAPI object with CRUD operations
+
+auth.js:
+   - User registration functionality
+   - User login functionality
+   - Token storage in localStorage
+   - Redirect to dashboard on successful login
+
+tasks.js:
+   - Task fetching and rendering
+   - Task card creation and display
+   - Task creation via modal form
+   - Task completion toggle
+   - Task deletion with confirmation modal
+   - View switching between different sections
+   - Completed tasks rendering
+
+dashboard.js:
+   - Main navigation view switching
+   - Overview statistics calculation
+   - Planning page content loading
+   - Profile dropdown functionality
+   - Logout functionality
+
+8.4 Styling Approach
+
+   - Modern, minimal design with clean aesthetics
+   - Consistent color scheme (primary: #6366f1)
+   - Responsive layout using flexbox
+   - Card-based design for tasks
+   - Modal overlays for user interactions
+   - Smooth transitions and hover effects
+
+================================================================================
+                      9. BACKEND IMPLEMENTATION
+================================================================================
+
+9.1 File Structure
+   backend/
+   ├── server.js           # Main Express server
+   ├── package.json        # Dependencies and scripts
+   ├── config/
+   │   └── db.js          # Database connection pool
+   └── .gitignore         # Git ignore file
+
+9.2 Server Configuration
+
+   - Express.js application setup
+   - CORS middleware for cross-origin requests
+   - JSON body parser middleware
+   - Environment variable support (dotenv)
+   - Database connection pooling
+
+9.3 Authentication Implementation
+
+   - Password hashing using bcryptjs (10 salt rounds)
+   - Email uniqueness validation
+   - User registration with error handling
+   - Login with password comparison
+   - Token generation (currently using placeholder JWT)
+
+9.4 Task Management Implementation
+
+   - CRUD operations for tasks
+   - Dynamic SQL query building for updates
+   - Input validation
+   - Error handling and appropriate HTTP status codes
+   - Database transaction safety
+
+9.5 Database Connection
+
+   - PostgreSQL connection pool configuration
+   - SSL connection for external database (Render)
+   - Connection string from environment or config
+   - Error handling for database operations
+
+================================================================================
+                        10. SECURITY FEATURES
+================================================================================
+
+10.1 Password Security
+    - Passwords are hashed using bcryptjs before storage
+    - Salt rounds: 10 (industry standard)
+    - Passwords are never stored in plain text
+    - Password comparison during login uses secure comparison
+
+10.2 Authentication
+    - JWT token-based authentication (placeholder implementation)
+    - Token storage in localStorage
+    - Protected routes requiring authentication
+    - Session management
+
+10.3 Input Validation
+    - Server-side validation for all inputs
+    - Required field checks
+    - Email format validation
+    - SQL injection prevention using parameterized queries
+
+10.4 Database Security
+    - Parameterized queries prevent SQL injection
+    - Connection pooling for efficient resource management
+    - SSL connection for external database
+
+================================================================================
+                     11. INSTALLATION AND SETUP
+================================================================================
+
+11.1 Prerequisites
+    - Node.js (v14 or higher)
+    - npm (Node Package Manager)
+    - PostgreSQL database (local or hosted)
+    - Modern web browser
+
+11.2 Backend Setup
+
+    1. Navigate to backend directory:
+       cd backend
+
+    2. Install dependencies:
+       npm install
+
+    3. Configure database connection in config/db.js:
+       Update connection string with your PostgreSQL credentials
+
+    4. Create database tables:
+       Execute SQL scripts in pgAdmin or PostgreSQL CLI:
+       
+       CREATE TABLE users (
+         id SERIAL PRIMARY KEY,
+         name VARCHAR(255) NOT NULL,
+         email VARCHAR(255) UNIQUE NOT NULL,
+         password VARCHAR(255) NOT NULL,
+         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+       );
+       
+       CREATE TABLE tasks (
+         id SERIAL PRIMARY KEY,
+         title VARCHAR(255) NOT NULL,
+         description TEXT,
+         category VARCHAR(50) NOT NULL,
+         tags TEXT[],
+         time VARCHAR(50) DEFAULT '1h 00m',
+         completed BOOLEAN DEFAULT FALSE,
+         comments INTEGER DEFAULT 0,
+         user_id INTEGER REFERENCES users(id),
+         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+       );
+
+    5. Start the development server:
+       npm run dev
+
+    The server will run on http://localhost:3000
+
+11.3 Frontend Setup
+
+    1. Open the frontend files in a web server
+    2. For development, use a local server (e.g., Live Server extension in VS Code)
+    3. Ensure the backend server is running before accessing the frontend
+    4. Open index.html in the browser to start the application
+
+11.4 Environment Configuration
+
+    Create a .env file in the backend directory (optional):
+    PORT=3000
+    DATABASE_URL=your_database_connection_string
+
+================================================================================
+                           12. USAGE GUIDE
+================================================================================
+
+12.1 User Registration
+    1. Open the application in a web browser
+    2. Fill in the registration form with:
+       - Full Name
+       - Email Address
+       - Password
+    3. Click "Register" button
+    4. Upon successful registration, you can log in
+
+12.2 User Login
+    1. Enter your registered email and password
+    2. Click "Login" button
+    3. You will be redirected to the dashboard
+
+12.3 Creating a Task
+    1. Navigate to "Projects" in the main navigation
+    2. Click the "+" button or "+ Add a Task" in any category column
+    3. Fill in the task details in the modal:
+       - Task Title (required)
+       - Description (optional)
+       - Estimated Time (optional)
+       - Tags (comma-separated, optional)
+    4. Click "Add Task" to create the task
+
+12.4 Managing Tasks
+    - Check the checkbox to mark a task as completed
+    - Completed tasks automatically move to "Completed Tasks" section
+    - Click the three-dot menu (⋯) to delete a task
+    - Confirm deletion in the modal that appears
+
+12.5 Navigation
+    - Start: Welcome page with project information
+    - Projects: Kanban board with task management
+    - Overview: Task statistics and category breakdown
+    - Completed: View all completed tasks
+    - Milestones: Milestone tracking (coming soon)
+    - Planning: Upcoming tasks and planning tips
+
+12.6 User Profile
+    - Click on the user avatar in the top right
+    - View user information
+    - Click "Logout" to sign out
+
+================================================================================
+                             13. TESTING
+================================================================================
+
+13.1 Manual Testing Performed
+
+    Authentication Testing:
+    - User registration with valid data
+    - User registration with duplicate email (error handling)
+    - User login with correct credentials
+    - User login with incorrect credentials (error handling)
+    - Form validation for empty fields
+
+    Task Management Testing:
+    - Creating tasks in different categories
+    - Viewing tasks in Kanban board
+    - Marking tasks as completed
+    - Deleting tasks with confirmation
+    - Task persistence after page refresh
+    - Viewing completed tasks section
+
+    UI/UX Testing:
+    - Navigation between different views
+    - Modal window functionality
+    - Responsive design on different screen sizes
+    - Error message display
+    - Loading states
+
+13.2 API Testing
+
+    Tools Used: Thunder Client / Postman
+
+    Tested Endpoints:
+    - POST /api/auth/register
+    - POST /api/auth/login
+    - GET /api/tasks
+    - POST /api/tasks
+    - PUT /api/tasks/:id
+    - DELETE /api/tasks/:id
+    - GET /api/health
+
+    All endpoints tested with:
+    - Valid requests
+    - Invalid requests (error handling)
+    - Missing required fields
+    - Authentication headers (where applicable)
+
+================================================================================
+                     14. CHALLENGES AND SOLUTIONS
+================================================================================
+
+14.1 Challenge: Database Connection
+    Problem: Initial connection issues with external PostgreSQL database
+    Solution: Configured SSL connection settings and verified connection string
+             format for Render database hosting
+
+14.2 Challenge: Password Hashing
+    Problem: Need to securely store user passwords
+    Solution: Implemented bcryptjs library with 10 salt rounds for password
+             hashing before database storage
+
+14.3 Challenge: Frontend-Backend Communication
+    Problem: Frontend using localStorage needed to communicate with backend API
+    Solution: Created centralized API utility (api.js) with fetch-based
+             requests and proper error handling
+
+14.4 Challenge: Task State Management
+    Problem: Managing task state across different views and sections
+    Solution: Implemented centralized task fetching and rendering functions
+             with proper state updates
+
+14.5 Challenge: Modal Functionality
+    Problem: Add task button not opening modal window
+    Solution: Fixed event delegation and async/await issues, exposed functions
+             globally for cross-module access
+
+14.6 Challenge: Delete Confirmation
+    Problem: Browser confirm() dialog not matching design requirements
+    Solution: Created custom delete confirmation modal with minimal design
+
+================================================================================
+                       15. FUTURE ENHANCEMENTS
+================================================================================
+
+15.1 Authentication Improvements
+    - Implement proper JWT token generation and validation
+    - Add token refresh mechanism
+    - Implement password reset functionality
+    - Add email verification
+
+15.2 Task Features
+    - Task assignment to specific users
+    - Task due dates and reminders
+    - Task priority levels
+    - Task attachments and file uploads
+    - Task comments and collaboration
+    - Task search and advanced filtering
+
+15.3 User Features
+    - User profiles with avatars
+    - User roles and permissions
+    - Team/organization support
+    - Activity logs and notifications
+
+15.4 UI/UX Improvements
+    - Drag-and-drop task reordering
+    - Keyboard shortcuts
+    - Dark mode support
+    - Mobile app version
+    - Real-time updates using WebSockets
+
+15.5 Technical Improvements
+    - Unit and integration testing
+    - API rate limiting
+    - Caching mechanisms
+    - Database indexing optimization
+    - Error logging and monitoring
+    - Deployment automation
+
+================================================================================
+                           16. CONCLUSION
+================================================================================
+
+The Campus Task Collaboration Board successfully implements a full-stack web
+application for managing campus tasks. The project demonstrates proficiency in:
+
+- Frontend development with HTML, CSS, and JavaScript
+- Backend development with Node.js and Express.js
+- Database design and PostgreSQL integration
+- RESTful API design and implementation
+- User authentication and security best practices
+- Modern UI/UX design principles
+
+The application provides a solid foundation for task management and can be
+extended with additional features as needed. The modular architecture allows
+for easy maintenance and future enhancements.
+
+Key Achievements:
+- Secure user authentication system
+- Functional Kanban board interface
+- Complete CRUD operations for tasks
+- Responsive and intuitive user interface
+- RESTful API with proper error handling
+- Database integration with PostgreSQL
+
+The project successfully meets the requirements for a university course
+assignment and demonstrates practical application of web development
+technologies and best practices.
+
+================================================================================
+                              END OF DOCUMENTATION
+================================================================================
+

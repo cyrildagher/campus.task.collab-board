@@ -15,17 +15,25 @@
         <div class="nav-left">
             <div class="logo">t.</div>
             <nav class="main-nav">
-                <a href="#" class="nav-link">Start</a>
-                <a href="#" class="nav-link active">Projects</a>
-                <a href="#" class="nav-link">Planning</a>
+                <a href="#" class="nav-link" data-main-view="start">Start</a>
+                <a href="#" class="nav-link active" data-main-view="projects">Projects</a>
+                <a href="#" class="nav-link" data-main-view="planning">Planning</a>
             </nav>
         </div>
         <div class="nav-right">
             <button class="icon-btn" title="Search">⌕</button>
             <button class="icon-btn" title="Add">+</button>
-            <div class="user-menu">
+            <div class="user-menu" id="userMenu">
                 <div class="user-avatar-placeholder">U</div>
                 <span class="dropdown-arrow">▼</span>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <div class="dropdown-item" id="userInfo">
+                        <div class="user-name" id="userName">User</div>
+                        <div class="user-email" id="userEmail">user@example.com</div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-btn" id="logoutBtn">Logout</button>
+                </div>
             </div>
         </div>
     </div>
@@ -34,13 +42,47 @@
     <div class="secondary-nav">
         <h1 class="board-title">Tasks Board</h1>
         <div class="sub-nav">
-            <a href="#" class="sub-nav-link">Overview</a>
-            <a href="#" class="sub-nav-link active">Tasks</a>
-            <a href="#" class="sub-nav-link">Milestones</a>
+            <a href="#" class="sub-nav-link" data-view="overview">Overview</a>
+            <a href="#" class="sub-nav-link active" data-view="tasks">Tasks</a>
+            <a href="#" class="sub-nav-link" data-view="milestones">Milestones</a>
+            <a href="#" class="sub-nav-link" data-view="completed">Completed Tasks</a>
+        </div>
+    </div>
+
+    <!-- Start/Hero page -->
+    <div id="startView" class="view-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to the Campus Task Collaboration Board</h1>
+                <p class="hero-subtitle">by Cyril Michael Dagher - 10012300026</p>
+                <div class="hero-features">
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>Academics</h3>
+                        <p>Manage your academic tasks and assignments</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎮</div>
+                        <h3>Recreational</h3>
+                        <p>Organize recreational activities and events</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚽</div>
+                        <h3>Sports</h3>
+                        <p>Track sports activities and tournaments</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎉</div>
+                        <h3>Events</h3>
+                        <p>Plan and manage campus events</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- kanban board -->
+    <div id="projectsView" class="view-section" style="display: none;">
     <div class="board">
         <!-- Academics column -->
         <div class="column">
@@ -48,54 +90,7 @@
                 <span>Academics</span>
                 <button class="add-btn">+</button>
             </div>
-            <div class="task-list">
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Research Paper</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Complete literature review for final project</p>
-                    <div class="task-tags">
-                        <span class="tag tag-yellow">High Priority</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>2</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 45%"></div>
-                            </div>
-                            <span class="progress-text">45%</span>
-                        </div>
-                        <div class="task-time">Est. 8h 15m</div>
-                    </div>
-                </div>
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Lab Report</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Write up chemistry experiment results</p>
-                    <div class="task-tags">
-                        <span class="tag tag-green">Due Soon</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>3</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%"></div>
-                            </div>
-                            <span class="progress-text">60%</span>
-                        </div>
-                        <div class="task-time">Est. 4h 30m</div>
-                    </div>
-                </div>
-            </div>
+            <div class="task-list"></div>
             <button class="add-card-btn">+ Add a Task</button>
         </div>
 
@@ -105,55 +100,7 @@
                 <span>Recreational</span>
                 <button class="add-btn">+</button>
             </div>
-            <div class="task-list">
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Game Night</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Organize board games event for student club</p>
-                    <div class="task-tags">
-                        <span class="tag tag-green">Planning</span>
-                        <span class="tag tag-purple-light">Social</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>5</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 30%"></div>
-                            </div>
-                            <span class="progress-text">30%</span>
-                        </div>
-                        <div class="task-time">Est. 6h 00m</div>
-                    </div>
-                </div>
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Movie Screening</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Set up outdoor movie night at campus</p>
-                    <div class="task-tags">
-                        <span class="tag tag-purple">Entertainment</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>8</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 20%"></div>
-                            </div>
-                            <span class="progress-text">20%</span>
-                        </div>
-                        <div class="task-time">Est. 5h 00m</div>
-                    </div>
-                </div>
-            </div>
+            <div class="task-list"></div>
             <button class="add-card-btn">+ Add a Task</button>
         </div>
 
@@ -163,54 +110,7 @@
                 <span>Sports</span>
                 <button class="add-btn">+</button>
             </div>
-            <div class="task-list">
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Basketball Tournament</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Coordinate inter-department basketball competition</p>
-                    <div class="task-tags">
-                        <span class="tag tag-yellow">Urgent</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>12</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 75%"></div>
-                            </div>
-                            <span class="progress-text">75%</span>
-                        </div>
-                        <div class="task-time">Est. 10h 00m</div>
-                    </div>
-                </div>
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Fitness Class</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Schedule weekly yoga sessions at gym</p>
-                    <div class="task-tags">
-                        <span class="tag tag-green">Regular</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>4</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 90%"></div>
-                            </div>
-                            <span class="progress-text">90%</span>
-                        </div>
-                        <div class="task-time">Est. 3h 00m</div>
-                    </div>
-                </div>
-            </div>
+            <div class="task-list"></div>
             <button class="add-card-btn">+ Add a Task</button>
         </div>
 
@@ -220,58 +120,140 @@
                 <span>Events</span>
                 <button class="add-btn">+</button>
             </div>
-            <div class="task-list">
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Spring Festival</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Plan annual campus spring celebration event</p>
-                    <div class="task-tags">
-                        <span class="tag tag-teal">Major Event</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>15</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 50%"></div>
-                            </div>
-                            <span class="progress-text">50%</span>
-                        </div>
-                        <div class="task-time">Est. 20h 00m</div>
-                    </div>
-                </div>
-                <div class="task-card">
-                    <div class="task-header">
-                        <input type="checkbox" class="task-checkbox">
-                        <h4>Career Fair</h4>
-                        <span class="task-menu">⋯</span>
-                    </div>
-                    <p class="task-desc">Organize company recruitment event</p>
-                    <div class="task-tags">
-                        <span class="tag tag-yellow">Important</span>
-                    </div>
-                    <div class="task-footer">
-                        <div class="task-comments">
-                            <span>9</span>
-                        </div>
-                        <div class="task-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 35%"></div>
-                            </div>
-                            <span class="progress-text">35%</span>
-                        </div>
-                        <div class="task-time">Est. 15h 00m</div>
-                    </div>
-                </div>
-            </div>
+            <div class="task-list"></div>
             <button class="add-card-btn">+ Add a Task</button>
         </div>
     </div>
+    </div>
 
+    <!-- completed tasks view -->
+    <div id="completedView" class="view-section" style="display: none;">
+        <div class="completed-container">
+            <h2>Completed Tasks</h2>
+            <div id="completedTasksList" class="completed-tasks-list"></div>
+        </div>
+    </div>
+
+    <!-- milestones view -->
+    <div id="milestonesView" class="view-section" style="display: none;">
+        <div class="completed-container">
+            <h2>Milestones</h2>
+            <p>Milestones coming soon...</p>
+        </div>
+    </div>
+
+    <!-- overview view -->
+    <div id="overviewView" class="view-section" style="display: none;">
+        <div class="completed-container">
+            <h2>Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingTasks">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="categoriesCount">4</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+            <div class="category-breakdown">
+                <h3>Tasks by Category</h3>
+                <div class="breakdown-list" id="categoryBreakdown"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Planning view -->
+    <div id="planningView" class="view-section" style="display: none;">
+        <div class="planning-container">
+            <h2>Task Planning</h2>
+            <div class="planning-content">
+                <div class="planning-calendar">
+                    <h3>Upcoming Tasks</h3>
+                    <div id="upcomingTasks" class="upcoming-list"></div>
+                </div>
+                <div class="planning-suggestions">
+                    <h3>Planning Tips</h3>
+                    <div class="tips-list">
+                        <div class="tip-item">
+                            <span class="tip-icon">✓</span>
+                            <p>Break large tasks into smaller, manageable steps</p>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">⏰</span>
+                            <p>Set realistic time estimates for each task</p>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">🏷️</span>
+                            <p>Use tags to prioritize and organize tasks</p>
+                        </div>
+                        <div class="tip-item">
+                            <span class="tip-icon">📅</span>
+                            <p>Review and update your tasks regularly</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal for adding new task -->
+    <div id="taskModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Task</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title</label>
+                    <input type="text" id="taskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="taskTime">Estimated Time (e.g., 2h 30m)</label>
+                    <input type="text" id="taskTime" placeholder="2h 30m">
+                </div>
+                <div class="form-group">
+                    <label for="taskTags">Tags (comma separated)</label>
+                    <input type="text" id="taskTags" placeholder="High Priority, Urgent">
+                </div>
+                <input type="hidden" id="taskCategory">
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-submit">Add Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal delete-modal" style="display: none;">
+        <div class="modal-content delete-modal-content">
+            <div class="delete-modal-body">
+                <h3>Delete Task</h3>
+                <p>Are you sure you want to delete this task? This action cannot be undone.</p>
+                <div class="delete-modal-actions">
+                    <button type="button" class="btn-cancel-delete">Cancel</button>
+                    <button type="button" class="btn-confirm-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
     <script src="js/tasks.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

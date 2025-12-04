@@ -1,70 +1,73 @@
-// very small, readable auth mock for the frontend
-const loginForm = document.getElementById('loginForm');
-const registerForm = document.getElementById('registerForm');
-const showRegister = document.getElementById('showRegister');
-const cancelRegister = document.getElementById('cancelRegister');
-const registerBox = document.getElementById('registerBox');
-const message = document.getElementById('message');
-const regMessage = document.getElementById('regMessage');
+// auth using backend API
+document.addEventListener('DOMContentLoaded', () => {
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const showRegister = document.getElementById('showRegister');
+  const cancelRegister = document.getElementById('cancelRegister');
+  const registerBox = document.getElementById('registerBox');
+  const message = document.getElementById('message');
+  const regMessage = document.getElementById('regMessage');
 
-showRegister.addEventListener('click', () => {
-  registerBox.style.display = 'block';
-  message.textContent = '';
-});
-
-cancelRegister.addEventListener('click', () => {
-  registerBox.style.display = 'none';
-  regMessage.textContent = '';
-});
-
-// simple "users" stored in localStorage for frontend-only demo
-function getUsers() {
-  return JSON.parse(localStorage.getItem('users') || '[]');
-}
-function saveUsers(users) {
-  localStorage.setItem('users', JSON.stringify(users));
-}
-
-registerForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
-  const password = document.getElementById('regPassword').value;
-
-  const users = getUsers();
-  if (users.find(u => u.email === email)) {
-    regMessage.textContent = 'An account with that email already exists.';
+  if (!loginForm || !registerForm || !showRegister || !cancelRegister || !registerBox) {
+    console.error('Missing form elements');
     return;
   }
 
-  users.push({ name, email, password }); // plain password only for mock/demo
-  saveUsers(users);
+  showRegister.addEventListener('click', () => {
+    registerBox.style.display = 'block';
+    message.textContent = '';
+  });
 
-  regMessage.textContent = 'Account created. You can now login.';
-  registerForm.reset();
-  setTimeout(() => {
+  cancelRegister.addEventListener('click', () => {
     registerBox.style.display = 'none';
     regMessage.textContent = '';
-  }, 900);
-});
+  });
 
-loginForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const password = document.getElementById('password').value;
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const password = document.getElementById('regPassword').value;
 
-  const users = getUsers();
-  const user = users.find(u => u.email === email && u.password === password);
+    if (!name || !email || !password) {
+      regMessage.textContent = 'Please fill in all fields.';
+      return;
+    }
 
-  if (!user) {
-    message.textContent = 'Invalid email or password.';
-    return;
-  }
+    try {
+      await authAPI.register(name, email, password);
+      regMessage.textContent = 'Account created. You can now login.';
+      regMessage.style.color = '#10b981';
+      registerForm.reset();
+      setTimeout(() => {
+        registerBox.style.display = 'none';
+        regMessage.textContent = '';
+      }, 2000);
+    } catch (error) {
+      regMessage.textContent = error.message || 'Registration failed.';
+      regMessage.style.color = '#ef4444';
+    }
+  });
 
-  // fake token so the dashboard can check login
-  localStorage.setItem('token', 'fake-jwt-token');
-  localStorage.setItem('user', JSON.stringify({ name: user.name, email: user.email }));
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
 
-  // go to dashboard
-  window.location.href = 'dashboard.html';
+    if (!email || !password) {
+      message.textContent = 'Please enter email and password.';
+      message.style.color = '#ef4444';
+      return;
+    }
+
+    try {
+      const response = await authAPI.login(email, password);
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      window.location.href = 'dashboard.html';
+    } catch (error) {
+      message.textContent = error.message || 'Invalid email or password.';
+      message.style.color = '#ef4444';
+    }
+  });
 });

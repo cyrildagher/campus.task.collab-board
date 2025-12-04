@@ -4,78 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Task Board | Login</title>
-    <link rel ="stylesheet" href="css/styles.css">
-
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <style>
-        /* Specifif to the login page only hence why i ddnt separate */
-        .auth-container{
-            max-width: 420px; 
-            margin: 60px auto; 
-            background: #fff; 
-            padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 12px #362b2b; 
-        }
-        .auth-container h2 { 
-            margin: 0 0 12px;
-        }
-        .auth-container form input{
-            width: 100%; 
-            padding: 10px; 
-            margin: 8px 0; 
-            border: 1px solid #ff1e00; 
-            border-radius: 6px; 
-        }
-        .auth-actions{ 
-            display:flex; 
-            gap: 10px; 
-            margin-top: 10px; 
-        }
-        auth-actions button{
-            flex: 1; 
-            padding: 10px; 
-            border-radius: 6px; 
-            border: none; 
-            cursor: pointer; 
-        }
-        .btn-primary{
-            background: #4f46e5; 
-            color: #fff; 
-        }
-        .btn-secondary{
-            background: #eef0ff;
-            color: #222; 
-        }
-        .small-note {
-            font-size: 13px; 
-            color: #666; 
-            margin-top: 8px;
-        }
-    </style>
 </head>
 <body>
-    <div class="navbar">
-        <h3>Campus Task Collaboration Board</h3>
+    <!-- top navigation bar -->
+    <div class="top-nav">
+        <div class="nav-left">
+            <div class="logo">t.</div>
+        </div>
     </div>
 
     <div class="auth-container">
         <h2>Sign in</h2>
 
-        <form id ="loginForm" autocomplete ="off">
+        <form id="loginForm" autocomplete="off">
             <input type="email" id="email" placeholder="Email" required />
             <input type="password" id="password" placeholder="Password" required /> 
             <div class="auth-actions">
-                <button type ="submit" class="btn-primary">Login</button>
+                <button type="submit" class="btn-primary">Login</button>
                 <button type="button" id="showRegister" class="btn-secondary">Register</button>
             </div>
-            <p id ="message" class="small-note"></p>
+            <p id="message" class="small-note"></p>
         </form>
 
-        <div class="registerBox" style="display:none; margin-top:12px;">
+        <div id="registerBox" style="display:none; margin-top:20px;">
             <h3>Create Account</h3>
             <form id="registerForm" autocomplete="off">
                 <input type="text" id="name" placeholder="Full name" required />
@@ -88,7 +44,9 @@
                 <p id="regMessage" class="small-note"></p>
             </form>
         </div>
-
     </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
