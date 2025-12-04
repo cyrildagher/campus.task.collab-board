@@ -197,7 +197,7 @@ function showTaskModal(category) {
   if (form) {
     form.reset();
   }
-  modal.style.display = 'block';
+  modal.style.display = 'flex';
   console.log('Modal should be visible now');
 }
 
