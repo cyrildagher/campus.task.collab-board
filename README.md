@@ -5,6 +5,8 @@ A full-stack web application designed to help manage and allocate tasks around t
 **Developer:** Cyril Michael Dagher  
 **Student ID:** 10012300026
 
+**🌐 Live Demo:** [https://cyrildagher.github.io/campus.task.collab-board/](https://cyrildagher.github.io/campus.task.collab-board/)
+
 ---
 
 ## 🎯 Project Overview
