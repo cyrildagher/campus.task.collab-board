@@ -1,5 +1,5 @@
 // API configuration and utility functions
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://campus-task-collab-board-gqd5.onrender.com/api';
 
 // helper function to make API requests
 async function apiRequest(endpoint, options = {}) {

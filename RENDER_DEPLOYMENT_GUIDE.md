@@ -26,7 +26,7 @@ Your `package.json` already has:
   "dev": "nodemon server.js"
 }
 ```
-This is perfect - Render will use `npm start` to run your server.
+Render will use `npm run dev` to run your server with nodemon (auto-restart on changes).
 
 ### 1.3 Push Your Code to GitHub
 
@@ -89,10 +89,10 @@ If you haven't already:
    - **Name**: `campus-task-backend` (or any name you prefer)
    - **Region**: Choose closest to you (e.g., `Oregon (US West)`)
    - **Branch**: `main` (or `master` if that's your branch)
-   - **Root Directory**: `backend` (IMPORTANT: This tells Render where your backend code is)
+   - **Root Directory**: `backend` ⚠️ **CRITICAL**: This MUST be set to `backend` or Render won't find your `package.json` file!
    - **Runtime**: `Node`
    - **Build Command**: `npm install`
-   - **Start Command**: `npm start`
+   - **Start Command**: `npm run dev`
 
    **Advanced Settings (Click to expand):**
    - **Environment**: `Node`
