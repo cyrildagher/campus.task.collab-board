@@ -277,6 +277,7 @@ GET /api/health
 ================================================================================
 
 8.1 File Structure
+   index.html              # Root loading page (redirects to frontend)
    frontend/
    ├── index.html          # Login/Registration page
    ├── dashboard.html       # Main dashboard page
@@ -469,8 +470,9 @@ dashboard.js:
 
     1. Open the frontend files in a web server
     2. For development, use a local server (e.g., Live Server extension in VS Code)
-    3. Ensure the backend server is running before accessing the frontend
-    4. Open index.html in the browser to start the application
+    3. For production, GitHub Pages will serve the root index.html which redirects to frontend/index.html
+    4. Ensure the backend server is running before accessing the frontend
+    5. Open index.html (root) or frontend/index.html directly in the browser to start the application
 
 11.4 Environment Configuration
 

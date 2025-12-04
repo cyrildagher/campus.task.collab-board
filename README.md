@@ -77,6 +77,7 @@ The Campus Task Collaboration Board is a comprehensive task management system th
 
 ```
 campus.task.collab-board/
+├── index.html              # Root loading page (redirects to frontend)
 ├── frontend/
 │   ├── index.html          # Login/Registration page
 │   ├── dashboard.html      # Main dashboard page
@@ -163,9 +164,10 @@ campus.task.collab-board/
 
 1. **Open the frontend files in a web server:**
    - For development, use a local server (e.g., Live Server extension in VS Code)
+   - For production, GitHub Pages will serve the root `index.html` which redirects to `frontend/index.html`
    - Ensure the backend server is running before accessing the frontend
 
-2. **Open `index.html` in the browser** to start the application
+2. **Open `index.html` in the browser** (root) or `frontend/index.html` directly to start the application
 
 ---
 
