@@ -1,8 +1,8 @@
-// dashboard navigation and UI functionality
+// dashboard stuff - navigation and ui
 
-// switch main navigation views
+// switch between main views (start, projects, planning)
 function switchMainView(viewName) {
-  // Hide all main views
+  // hide everything first
   const allMainViews = ['startView', 'projectsView', 'planningView'];
   allMainViews.forEach(viewId => {
     const view = document.getElementById(viewId);
@@ -11,7 +11,7 @@ function switchMainView(viewName) {
     }
   });
   
-  // Hide all sub-views when switching main views
+  // also hide sub views
   const allSubViews = ['tasksView', 'overviewView', 'milestonesView', 'completedView', 'teamsView'];
   allSubViews.forEach(viewId => {
     const view = document.getElementById(viewId);
@@ -20,7 +20,7 @@ function switchMainView(viewName) {
     }
   });
   
-  // Hide/show secondary nav based on view
+  // show/hide the secondary nav bar
   const secondaryNav = document.querySelector('.secondary-nav');
   if (viewName === 'start') {
     if (secondaryNav) {
@@ -32,44 +32,44 @@ function switchMainView(viewName) {
     }
   }
   
-  // Remove active class from all main nav links
+  // remove active styling from nav
   document.querySelectorAll('.main-nav .nav-link').forEach(link => {
     link.classList.remove('active');
   });
   
-  // Remove active class from all sub nav links
+  // remove active from sub nav too
   document.querySelectorAll('.sub-nav-link').forEach(link => {
     link.classList.remove('active');
   });
   
-  // Show selected main view
+  // show the view we want
   const viewElement = document.getElementById(viewName + 'View');
   if (viewElement) {
     viewElement.style.display = 'block';
   }
   
-  // Add active class to clicked nav link
+  // highlight the clicked link
   const activeLink = document.querySelector(`[data-main-view="${viewName}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
   }
   
-  // Load view-specific content
+  // load content for the view
   if (viewName === 'planning') {
     loadPlanningView();
   } else if (viewName === 'projects') {
-    // Show tasks view by default when switching to projects
-    // Set active sub-nav link
+    // default to tasks view when going to projects
+    // highlight tasks link
     const tasksSubLink = document.querySelector('[data-view="tasks"]');
     if (tasksSubLink) {
       tasksSubLink.classList.add('active');
     }
-    // Show projects view (which contains the kanban board)
+    // show projects view (has the kanban board)
     const projectsView = document.getElementById('projectsView');
     if (projectsView) {
       projectsView.style.display = 'block';
     }
-    // Re-setup add task buttons when switching to projects view
+    // re-setup buttons when switching to projects (sometimes they break)
     setTimeout(() => {
       if (typeof setupAddTaskButtons === 'function') {
         setupAddTaskButtons();
@@ -81,7 +81,7 @@ function switchMainView(viewName) {
   }
 }
 
-// load overview statistics (exposed globally for tasks.js)
+// load overview stats (used by tasks.js)
 window.loadOverviewStats = async function() {
   // get tasks from API or localStorage
   let tasks = [];
@@ -95,7 +95,7 @@ window.loadOverviewStats = async function() {
     tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
   }
   
-  // Update status-based counts
+  // count tasks by status
   const total = tasks.length;
   const completed = tasks.filter(t => {
     const status = t.status || (t.completed ? 'Completed' : 'Pending');
@@ -114,7 +114,7 @@ window.loadOverviewStats = async function() {
   document.getElementById('completedTasks').textContent = completed;
   document.getElementById('pendingTasks').textContent = pending;
   
-  // category breakdown
+  // show tasks by category
   const categories = ['Academics', 'Recreational', 'Sports', 'Events'];
   const breakdown = document.getElementById('categoryBreakdown');
   breakdown.innerHTML = '';
@@ -133,11 +133,11 @@ window.loadOverviewStats = async function() {
     breakdown.appendChild(item);
   });
   
-  // Load assigned tasks by team member
+  // show tasks assigned to each team member
   await loadAssignedTasksByMember();
 };
 
-// Load assigned tasks grouped by team member
+// show tasks grouped by who theyre assigned to
 async function loadAssignedTasksByMember() {
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -148,10 +148,10 @@ async function loadAssignedTasksByMember() {
     const tasks = await tasksAPI.getAll(user.id);
     const users = await usersAPI.getAll();
     
-    // Filter tasks that have assignees
+    // only show tasks that are assigned to someone
     const assignedTasks = tasks.filter(t => t.assignee_id);
     
-    // Group by assignee
+    // group them by who theyre assigned to
     const tasksByMember = {};
     assignedTasks.forEach(task => {
       const assigneeId = task.assignee_id;
@@ -165,7 +165,7 @@ async function loadAssignedTasksByMember() {
       tasksByMember[assigneeId].tasks.push(task);
     });
     
-    // Create or update the assigned tasks section
+    // create the section to show assigned tasks
     let assignedSection = document.getElementById('assignedTasksSection');
     if (!assignedSection) {
       assignedSection = document.createElement('div');
@@ -241,7 +241,7 @@ async function loadAssignedTasksByMember() {
   }
 }
 
-// load planning view
+// load the planning page
 async function loadPlanningView() {
   // get tasks from API or localStorage
   let tasks = [];
@@ -264,7 +264,7 @@ async function loadPlanningView() {
     return;
   }
   
-  // show first 5 pending tasks
+  // show first 5 tasks (dont want to show too many)
   pending.slice(0, 5).forEach(task => {
     const item = document.createElement('div');
     item.className = 'upcoming-item';
@@ -278,20 +278,20 @@ async function loadPlanningView() {
   });
 }
 
-// user dropdown functionality
+// user menu dropdown
 function setupUserDropdown() {
   const userMenu = document.getElementById('userMenu');
   const dropdown = document.getElementById('userDropdown');
   const logoutBtn = document.getElementById('logoutBtn');
   
-  // load user info
+  // get user info from localStorage
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   if (user.name) {
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userEmail').textContent = user.email || '';
   }
   
-  // toggle dropdown
+  // show/hide dropdown
   userMenu.addEventListener('click', (e) => {
     e.stopPropagation();
     if (dropdown.style.display === 'none') {
@@ -301,14 +301,14 @@ function setupUserDropdown() {
     }
   });
   
-  // close dropdown when clicking outside
+  // close if clicking outside
   document.addEventListener('click', (e) => {
     if (!userMenu.contains(e.target)) {
       dropdown.style.display = 'none';
     }
   });
   
-  // logout functionality
+  // handle logout
   logoutBtn.addEventListener('click', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -316,7 +316,7 @@ function setupUserDropdown() {
   });
 }
 
-// search functionality
+// search (basic implementation, could be better)
 function setupSearch() {
   const searchBtn = document.querySelector('.icon-btn[title="Search"]');
   searchBtn.addEventListener('click', () => {
@@ -337,14 +337,14 @@ function setupSearch() {
   });
 }
 
-// add button functionality
+// add button (opens task modal)
 function setupAddButton() {
   const addBtn = document.querySelector('.icon-btn[title="Add"]');
   addBtn.addEventListener('click', () => {
-    // switch to projects view and show modal
+    // go to projects and open modal
     switchMainView('projects');
     setTimeout(() => {
-      // trigger add task modal (this would need to be exposed from tasks.js)
+      // open add task modal (needs to be exposed from tasks.js)
       const firstAddBtn = document.querySelector('.add-btn');
       if (firstAddBtn) {
         firstAddBtn.click();
@@ -353,9 +353,9 @@ function setupAddButton() {
   });
 }
 
-// initialize dashboard
+// setup everything when page loads
 document.addEventListener('DOMContentLoaded', () => {
-  // setup main navigation
+  // handle main nav clicks
   document.querySelectorAll('.main-nav .nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -367,7 +367,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // setup sub-navigation (Overview, Tasks, Teams, etc.)
+  // handle sub nav clicks
   document.querySelectorAll('.sub-nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // setup logo click to go to start view
+  // logo goes back to start page
   const logoLink = document.getElementById('logoLink');
   if (logoLink) {
     logoLink.addEventListener('click', (e) => {
@@ -389,16 +389,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // setup user dropdown
+  // setup user menu
   setupUserDropdown();
   
-  // setup search
+  // setup search button
   setupSearch();
   
   // setup add button
   setupAddButton();
   
-  // default to start view, but show secondary nav for projects
+  // start on start page, hide secondary nav
   const secondaryNav = document.querySelector('.secondary-nav');
   if (secondaryNav) {
     secondaryNav.style.display = 'none';

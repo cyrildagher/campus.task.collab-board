@@ -1,12 +1,12 @@
-// check if user is logged in
+// redirect to login if not logged in
 if (!localStorage.getItem('token')) {
   window.location.href = 'index.html';
 }
 
-// categories for the board
+// the 4 categories for tasks
 const categories = ['Academics', 'Recreational', 'Sports', 'Events'];
 
-// get tasks from API (with localStorage fallback)
+// get tasks from api, falls back to localStorage if api fails
 async function getTasks() {
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -18,7 +18,7 @@ async function getTasks() {
     return tasks;
   } catch (error) {
     console.error('Failed to fetch tasks:', error);
-    // fallback to localStorage if API fails
+    // if api fails use localStorage as backup
     const tasks = localStorage.getItem('tasks');
     if (!tasks) {
       return [];
@@ -27,14 +27,14 @@ async function getTasks() {
   }
 }
 
-// save tasks to API (with localStorage fallback)
+// save tasks (just to localStorage for now)
 async function saveTasks(tasks) {
-  // for now, just save to localStorage as backup
-  // in a real app, you'd sync with the backend
+  // saving to localStorage as backup
+  // todo: actually sync with backend properly
   localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
-// get tag class based on tag name
+// returns css class for tag colors
 function getTagClass(tag) {
   const tagMap = {
     'High Priority': 'tag-yellow',
@@ -50,7 +50,7 @@ function getTagClass(tag) {
   return tagMap[tag] || 'tag-green';
 }
 
-// create a task card element
+// creates the html for a task card
 function createTaskCard(task) {
   const card = document.createElement('div');
   card.className = 'task-card';
@@ -87,7 +87,7 @@ function createTaskCard(task) {
     </div>
   `;
 
-  // handle checkbox click
+  // when checkbox is clicked, update status
   const checkbox = card.querySelector('.task-checkbox');
   checkbox.addEventListener('change', async () => {
     try {
@@ -97,7 +97,7 @@ function createTaskCard(task) {
       renderCompletedTasks();
     } catch (error) {
       console.error('Failed to update task:', error);
-      // fallback to localStorage
+      // use localStorage if update fails
       const tasks = await getTasks();
       const taskIndex = tasks.findIndex(t => t.id === task.id);
       if (taskIndex !== -1) {
@@ -109,7 +109,7 @@ function createTaskCard(task) {
     }
   });
 
-  // handle status change
+  // when status dropdown changes
   const statusSelect = card.querySelector('.task-status-select');
   if (statusSelect) {
     statusSelect.addEventListener('change', async (e) => {
@@ -125,7 +125,7 @@ function createTaskCard(task) {
     });
   }
 
-  // handle menu click (delete task)
+  // three dots menu for deleting
   const menu = card.querySelector('.task-menu');
   menu.addEventListener('click', () => {
     showDeleteModal(task.id);
@@ -134,7 +134,7 @@ function createTaskCard(task) {
   return card;
 }
 
-// render all tasks on the board
+// show all tasks on the kanban board
 async function renderTasks() {
   const tasks = await getTasks();
   
@@ -148,7 +148,7 @@ async function renderTasks() {
     const taskList = column.querySelector('.task-list');
     taskList.innerHTML = '';
     
-    // Filter tasks by category and status (show Pending and In Progress, not Completed)
+    // only show pending and in progress, completed goes to completed section
     const categoryTasks = tasks.filter(t => {
       const status = t.status || (t.completed ? 'Completed' : 'Pending');
       return t.category === category && status !== 'Completed';
@@ -159,7 +159,7 @@ async function renderTasks() {
   });
 }
 
-// render completed tasks
+// show completed tasks in the completed section
 async function renderCompletedTasks() {
   const tasks = await getTasks();
   const completedTasks = tasks.filter(t => t.status === 'Completed' || t.completed);
@@ -177,16 +177,16 @@ async function renderCompletedTasks() {
   });
 }
 
-// handle add task button clicks using event delegation
-// Set up once on document, works for all views
+// handle add task buttons - using event delegation so it works everywhere
+// only set up once, works for all views
 let addTaskButtonsSetup = false;
 
 function setupAddTaskButtons() {
   if (addTaskButtonsSetup) return; // only set up once
   
-  // use event delegation on document so it works everywhere
+  // event delegation so buttons work even if added dynamically
   document.addEventListener('click', function(e) {
-    // check if clicked element is an add button
+    // check if what was clicked is an add button
     if (e.target.classList.contains('add-btn') || e.target.classList.contains('add-card-btn')) {
       e.preventDefault();
       e.stopPropagation();
@@ -211,10 +211,10 @@ function setupAddTaskButtons() {
   addTaskButtonsSetup = true;
 }
 
-// expose globally for dashboard.js
+// make available globally for dashboard.js
 window.setupAddTaskButtons = setupAddTaskButtons;
 
-// show modal for adding new task
+// open the add task modal
 function showTaskModal(category) {
   console.log('showTaskModal called with category:', category);
   const modal = document.getElementById('taskModal');
@@ -236,7 +236,7 @@ function showTaskModal(category) {
   console.log('Modal should be visible now');
 }
 
-// expose globally
+// make available globally
 window.showTaskModal = showTaskModal;
 
 // close modal
@@ -251,19 +251,19 @@ function closeTaskModal() {
   }
 }
 
-// expose globally
+// make available globally
 window.closeTaskModal = closeTaskModal;
 
-// add a new task
+// open modal to add new task
 function addNewTask(category) {
   console.log('addNewTask called with category:', category);
   showTaskModal(category);
 }
 
-// expose globally
+// make available globally
 window.addNewTask = addNewTask;
 
-// show delete confirmation modal
+// show delete confirmation popup
 let taskToDelete = null;
 
 function showDeleteModal(taskId) {
@@ -274,7 +274,7 @@ function showDeleteModal(taskId) {
   }
 }
 
-// close delete modal
+// close delete popup
 function closeDeleteModal() {
   taskToDelete = null;
   const deleteModal = document.getElementById('deleteModal');
@@ -283,22 +283,22 @@ function closeDeleteModal() {
   }
 }
 
-// expose globally
+// make available globally
 window.showDeleteModal = showDeleteModal;
 window.closeDeleteModal = closeDeleteModal;
 
-// switch between views (for Projects sub-navigation)
+// switch between different views in projects section
 function switchView(viewName) {
-  // First, ensure we're in the projects main view
+  // make sure we're in projects view first
   if (typeof switchMainView === 'function') {
     const projectsMainView = document.getElementById('projectsView');
     if (projectsMainView && projectsMainView.style.display === 'none') {
-      // Switch to projects main view first
+      // go to projects view
       switchMainView('projects');
     }
   }
   
-  // Hide all project sub-views
+  // hide all sub views
   const projectSubViews = ['overviewView', 'milestonesView', 'completedView', 'teamsView'];
   projectSubViews.forEach(viewId => {
     const view = document.getElementById(viewId);
@@ -307,24 +307,24 @@ function switchView(viewName) {
     }
   });
   
-  // Show/hide the projectsView kanban board based on view
+  // show/hide the kanban board
   const projectsView = document.getElementById('projectsView');
   if (projectsView) {
     if (viewName === 'tasks') {
-      // Show the kanban board for tasks view
+      // show kanban board for tasks
       projectsView.style.display = 'block';
     } else {
-      // Hide the kanban board for other sub-views
+      // hide kanban for other views
       projectsView.style.display = 'none';
     }
   }
   
-  // Remove active class from all sub-nav links
+  // remove active styling from all nav links
   document.querySelectorAll('.sub-nav-link').forEach(link => {
     link.classList.remove('active');
   });
   
-  // Show selected sub-view (if not tasks, which uses projectsView)
+  // show the selected view (tasks uses projectsView so skip it)
   if (viewName !== 'tasks') {
     const viewElement = document.getElementById(viewName + 'View');
     if (viewElement) {
@@ -332,13 +332,13 @@ function switchView(viewName) {
     }
   }
   
-  // Add active class to clicked nav link
+  // highlight the clicked nav link
   const activeLink = document.querySelector(`[data-view="${viewName}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
   }
   
-  // Render content based on view
+  // load content for the view
   if (viewName === 'completed') {
     renderCompletedTasks();
   } else if (viewName === 'overview') {
@@ -350,20 +350,20 @@ function switchView(viewName) {
       renderTeams();
     }
   } else if (viewName === 'tasks') {
-    // Re-render tasks when switching back to tasks view
+    // refresh tasks when going back to tasks view
     renderTasks();
   }
 }
 
-// expose globally for dashboard.js
+// make available globally for dashboard.js
 window.switchView = switchView;
 
-// initialize when page loads
+// run when page loads
 document.addEventListener('DOMContentLoaded', () => {
   renderTasks();
   setupAddTaskButtons();
   
-  // setup view switching
+  // handle view switching
   document.querySelectorAll('.sub-nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -374,29 +374,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // setup modal
+  // setup task modal
   const modal = document.getElementById('taskModal');
   const form = document.getElementById('taskForm');
   const closeBtn = document.querySelector('.close-modal');
   const cancelBtn = document.querySelector('.btn-cancel');
   
-  // close modal when clicking X or cancel
+  // close modal with X or cancel button
   closeBtn.addEventListener('click', closeTaskModal);
   cancelBtn.addEventListener('click', closeTaskModal);
   
-  // close modal when clicking outside
+  // close modal if clicking outside
   window.addEventListener('click', (e) => {
     if (e.target === modal) {
       closeTaskModal();
     }
-    // also handle delete modal
+    // same for delete modal
     const deleteModal = document.getElementById('deleteModal');
     if (e.target === deleteModal) {
       closeDeleteModal();
     }
   });
   
-  // setup delete modal
+  // setup delete confirmation
   const deleteModal = document.getElementById('deleteModal');
   const cancelDeleteBtn = document.querySelector('.btn-cancel-delete');
   const confirmDeleteBtn = document.querySelector('.btn-confirm-delete');
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
           console.error('Failed to delete task:', error);
           alert('Failed to delete task. Please try again.');
-          // fallback to localStorage
+          // use localStorage if delete fails
           const tasks = await getTasks();
           const filtered = tasks.filter(t => t.id !== taskToDelete);
           saveTasks(filtered);
@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Load users and teams for dropdowns
+  // load users and teams for the dropdowns in task form
   async function loadTaskFormData() {
     try {
       const users = await usersAPI.getAll();
@@ -462,14 +462,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Load form data when modal opens
+  // load dropdown data when modal opens
   const originalShowTaskModal = window.showTaskModal;
   window.showTaskModal = function(category) {
     originalShowTaskModal(category);
     loadTaskFormData();
   };
-
-  // handle form submission
+  
+  // when form is submitted
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -487,7 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
-    // parse tags from comma-separated string
+    // split tags by comma
     const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
     
     const user = JSON.parse(localStorage.getItem('user') || '{}');

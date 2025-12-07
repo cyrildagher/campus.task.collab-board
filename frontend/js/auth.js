@@ -1,4 +1,4 @@
-// auth using backend API
+// login and registration stuff
 document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('loginForm');
   const registerForm = document.getElementById('registerForm');
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Validate student ID format
+    // check if student id is 8-12 digits (learned regex for this)
     if (!/^\d{8,12}$/.test(studentId)) {
       regMessage.textContent = 'Student ID must be 8-12 digits.';
       regMessage.style.color = '#ef4444';

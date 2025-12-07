@@ -1,12 +1,11 @@
-// API configuration and utility functions
-// Use local API if running on localhost, otherwise use Render
+// figure out if we're running locally or on render
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:3000/api'
   : 'https://campus-task-collab-board-gqd5.onrender.com/api';
 
 console.log('API Base URL:', API_BASE_URL);
 
-// helper function to make API requests
+// helper to make api calls, handles errors and stuff
 async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem('token');
   
@@ -22,7 +21,7 @@ async function apiRequest(endpoint, options = {}) {
     console.log(`Making API request to: ${API_BASE_URL}${endpoint}`, config);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     
-    // Check if response is JSON
+    // check if response is json, sometimes it isnt
     const contentType = response.headers.get('content-type');
     let data;
     if (contentType && contentType.includes('application/json')) {
@@ -47,7 +46,7 @@ async function apiRequest(endpoint, options = {}) {
   }
 }
 
-// auth API calls
+// auth stuff - login and register
 const authAPI = {
   register: async (name, email, password, student_id) => {
     return apiRequest('/auth/register', {
@@ -64,7 +63,7 @@ const authAPI = {
   }
 };
 
-// tasks API calls
+// task api calls
 const tasksAPI = {
   getAll: async (userId) => {
     if (!userId) {
@@ -98,7 +97,7 @@ const tasksAPI = {
   }
 };
 
-// teams API calls
+// teams api - create, join, leave, etc
 const teamsAPI = {
   create: async (team) => {
     return apiRequest('/teams', {
@@ -145,7 +144,7 @@ const teamsAPI = {
   }
 };
 
-// users API calls
+// get all users (for dropdowns when assigning tasks)
 const usersAPI = {
   getAll: async () => {
     return apiRequest('/users');

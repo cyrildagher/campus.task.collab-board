@@ -1,6 +1,6 @@
-// Teams functionality
+// teams stuff - create, join, leave, view
 
-// Render teams list
+// show all teams the user is in
 async function renderTeams() {
   try {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -33,7 +33,7 @@ async function renderTeams() {
       teamCard.className = 'team-card';
       teamCard.style.cssText = 'border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 16px; background: white;';
       
-      // Get team members
+      // get list of team members
       let members = [];
       try {
         members = await teamsAPI.getMembers(team.id);
@@ -73,7 +73,7 @@ async function renderTeams() {
       teamsList.appendChild(teamCard);
     }
     
-    // Add event listeners for view buttons
+    // handle view button clicks
     document.querySelectorAll('.view-team-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const teamId = parseInt(btn.getAttribute('data-team-id'));
@@ -81,7 +81,7 @@ async function renderTeams() {
       });
     });
     
-    // Add event listeners for leave buttons
+    // handle leave button clicks
     document.querySelectorAll('.leave-team-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const teamId = parseInt(btn.getAttribute('data-team-id'));
@@ -115,7 +115,7 @@ async function renderTeams() {
   }
 }
 
-// Show team creation modal
+// open create team modal
 function showTeamModal() {
   const modal = document.getElementById('teamModal');
   if (modal) {
@@ -127,7 +127,7 @@ function showTeamModal() {
   }
 }
 
-// Close team modal
+// close create team modal
 function closeTeamModal() {
   const modal = document.getElementById('teamModal');
   if (modal) {
@@ -135,7 +135,7 @@ function closeTeamModal() {
   }
 }
 
-// Show team details
+// show team info and members
 async function showTeamDetails(teamId) {
   try {
     const team = await teamsAPI.getById(teamId);
@@ -149,7 +149,7 @@ async function showTeamDetails(teamId) {
     
     title.textContent = team.name;
     
-    // Check if current user is a member
+    // check if logged in user is in this team
     const currentUserMember = team.members.find(m => m.user_id === user.id);
     const canLeave = currentUserMember !== undefined;
     
@@ -191,7 +191,7 @@ async function showTeamDetails(teamId) {
       ` : ''}
     `;
     
-    // Add copy functionality
+    // handle copy team code button
     document.querySelectorAll('.copy-team-code-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const code = btn.getAttribute('data-code');
@@ -210,7 +210,7 @@ async function showTeamDetails(teamId) {
       });
     });
     
-    // Add leave team functionality
+    // handle leave team button
     document.querySelectorAll('.leave-team-details-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const teamId = parseInt(btn.getAttribute('data-team-id'));
@@ -247,7 +247,7 @@ async function showTeamDetails(teamId) {
   }
 }
 
-// Close team details modal
+// close team details popup
 function closeTeamDetailsModal() {
   const modal = document.getElementById('teamDetailsModal');
   if (modal) {
@@ -255,7 +255,7 @@ function closeTeamDetailsModal() {
   }
 }
 
-// Show join team modal
+// open join team modal
 function showJoinTeamModal() {
   const modal = document.getElementById('joinTeamModal');
   if (modal) {
@@ -271,7 +271,7 @@ function showJoinTeamModal() {
   }
 }
 
-// Close join team modal
+// close join team modal
 function closeJoinTeamModal() {
   const modal = document.getElementById('joinTeamModal');
   if (modal) {
@@ -279,7 +279,7 @@ function closeJoinTeamModal() {
   }
 }
 
-// Initialize teams functionality
+// setup all the team stuff when page loads
 document.addEventListener('DOMContentLoaded', () => {
   const createTeamBtn = document.getElementById('createTeamBtn');
   const joinTeamBtn = document.getElementById('joinTeamBtn');
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     closeTeamDetailsBtn.addEventListener('click', closeTeamDetailsModal);
   }
   
-  // Auto-uppercase team code input
+  // make team code uppercase automatically
   const teamCodeInput = document.getElementById('teamCode');
   if (teamCodeInput) {
     teamCodeInput.addEventListener('input', (e) => {
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Handle join team form submission
+  // when user submits join team form
   if (joinTeamForm) {
     joinTeamForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Close modals when clicking outside
+  // close modals if clicking outside
   window.addEventListener('click', (e) => {
     const teamModal = document.getElementById('teamModal');
     const teamDetailsModal = document.getElementById('teamDetailsModal');
@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Expose globally
+// make these available to other files
 window.renderTeams = renderTeams;
 window.showTeamDetails = showTeamDetails;
 
