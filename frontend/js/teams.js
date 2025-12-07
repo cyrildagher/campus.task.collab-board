@@ -54,6 +54,7 @@ async function renderTeams() {
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="view-team-btn" data-team-id="${team.id}" style="padding: 6px 12px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+            <button class="leave-team-btn" data-team-id="${team.id}" style="padding: 6px 12px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">Leave</button>
           </div>
         </div>
         <div class="team-members-preview" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
@@ -77,6 +78,31 @@ async function renderTeams() {
       btn.addEventListener('click', () => {
         const teamId = parseInt(btn.getAttribute('data-team-id'));
         showTeamDetails(teamId);
+      });
+    });
+    
+    // Add event listeners for leave buttons
+    document.querySelectorAll('.leave-team-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const teamId = parseInt(btn.getAttribute('data-team-id'));
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!user.id) {
+          alert('You must be logged in to leave a team');
+          return;
+        }
+        
+        if (confirm('Are you sure you want to leave this team? You will lose access to all team tasks.')) {
+          try {
+            await teamsAPI.leave(teamId, user.id);
+            alert('Successfully left the team');
+            renderTeams();
+          } catch (error) {
+            console.error('Failed to leave team:', error);
+            const errorMessage = error.message || 'Unknown error';
+            alert(`Failed to leave team: ${errorMessage}`);
+          }
+        }
       });
     });
   } catch (error) {
@@ -113,6 +139,7 @@ function closeTeamModal() {
 async function showTeamDetails(teamId) {
   try {
     const team = await teamsAPI.getById(teamId);
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const modal = document.getElementById('teamDetailsModal');
     const title = document.getElementById('teamDetailsTitle');
     const content = document.getElementById('teamDetailsContent');
@@ -121,6 +148,10 @@ async function showTeamDetails(teamId) {
     if (!modal || !title || !content || !membersList) return;
     
     title.textContent = team.name;
+    
+    // Check if current user is a member
+    const currentUserMember = team.members.find(m => m.user_id === user.id);
+    const canLeave = currentUserMember !== undefined;
     
     membersList.innerHTML = `
       <div style="margin-bottom: 16px;">
@@ -153,6 +184,11 @@ async function showTeamDetails(teamId) {
           `).join('')}
         </div>
       </div>
+      ${canLeave ? `
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <button class="leave-team-details-btn" data-team-id="${teamId}" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; width: 100%;">Leave Team</button>
+      </div>
+      ` : ''}
     `;
     
     // Add copy functionality
@@ -171,6 +207,36 @@ async function showTeamDetails(teamId) {
           console.error('Failed to copy:', err);
           alert('Failed to copy code. Code: ' + code);
         });
+      });
+    });
+    
+    // Add leave team functionality
+    document.querySelectorAll('.leave-team-details-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const teamId = parseInt(btn.getAttribute('data-team-id'));
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!user.id) {
+          alert('You must be logged in to leave a team');
+          return;
+        }
+        
+        if (confirm('Are you sure you want to leave this team? You will lose access to all team tasks.')) {
+          try {
+            const result = await teamsAPI.leave(teamId, user.id);
+            if (result.teamDeleted) {
+              alert('You left the team. The team was deleted as you were the only member.');
+            } else {
+              alert('Successfully left the team');
+            }
+            closeTeamDetailsModal();
+            renderTeams();
+          } catch (error) {
+            console.error('Failed to leave team:', error);
+            const errorMessage = error.message || 'Unknown error';
+            alert(`Failed to leave team: ${errorMessage}`);
+          }
+        }
       });
     });
     

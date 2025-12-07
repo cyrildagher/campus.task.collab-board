@@ -135,6 +135,13 @@ const teamsAPI = {
   
   getMembers: async (teamId) => {
     return apiRequest(`/teams/${teamId}/members`);
+  },
+  
+  leave: async (teamId, userId) => {
+    return apiRequest(`/teams/${teamId}/leave`, {
+      method: 'DELETE',
+      body: JSON.stringify({ user_id: userId })
+    });
   }
 };
 

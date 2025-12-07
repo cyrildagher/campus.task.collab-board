@@ -514,6 +514,102 @@ app.get('/api/users/:id/teams', async (req, res) => {
   }
 });
 
+// Leave team
+app.delete('/api/teams/:id/leave', async (req, res) => {
+  try {
+    const teamId = parseInt(req.params.id);
+    const { user_id } = req.body;
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    if (isNaN(teamId)) {
+      return res.status(400).json({ error: 'Invalid team ID format' });
+    }
+
+    // Check if user is a member
+    const memberCheck = await pool.query(
+      'SELECT * FROM team_members WHERE team_id = $1 AND user_id = $2',
+      [teamId, user_id]
+    );
+
+    if (memberCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'You are not a member of this team' });
+    }
+
+    const member = memberCheck.rows[0];
+
+    // Check if user is the creator/admin
+    const teamCheck = await pool.query(
+      'SELECT creator_id FROM teams WHERE id = $1',
+      [teamId]
+    );
+
+    if (teamCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Team not found' });
+    }
+
+    const isCreator = teamCheck.rows[0].creator_id === parseInt(user_id);
+    const isAdmin = member.role === 'admin';
+
+    // If user is the creator, check if there are other admins
+    if (isCreator || isAdmin) {
+      const adminCount = await pool.query(
+        'SELECT COUNT(*) FROM team_members WHERE team_id = $1 AND role = $2',
+        [teamId, 'admin']
+      );
+      
+      const totalAdmins = parseInt(adminCount.rows[0].count);
+      
+      // If this is the only admin, prevent leaving (or transfer ownership)
+      if (totalAdmins === 1) {
+        // Option 1: Prevent leaving
+        // return res.status(400).json({ error: 'Cannot leave team. You are the only admin. Please transfer ownership or promote another member first.' });
+        
+        // Option 2: Promote first member to admin (if there are other members)
+        const otherMembers = await pool.query(
+          'SELECT user_id FROM team_members WHERE team_id = $1 AND user_id != $2 ORDER BY user_id LIMIT 1',
+          [teamId, user_id]
+        );
+        
+        if (otherMembers.rows.length > 0) {
+          // Promote first member to admin
+          await pool.query(
+            'UPDATE team_members SET role = $1 WHERE team_id = $2 AND user_id = $3',
+            ['admin', teamId, otherMembers.rows[0].user_id]
+          );
+          // Update team creator
+          await pool.query(
+            'UPDATE teams SET creator_id = $1 WHERE id = $2',
+            [otherMembers.rows[0].user_id, teamId]
+          );
+        } else {
+          // No other members, delete the team
+          await pool.query('DELETE FROM teams WHERE id = $1', [teamId]);
+          return res.json({ message: 'Team deleted as you were the only member', teamDeleted: true });
+        }
+      }
+    }
+
+    // Remove user from team
+    await pool.query(
+      'DELETE FROM team_members WHERE team_id = $1 AND user_id = $2',
+      [teamId, user_id]
+    );
+
+    res.json({ message: 'Successfully left the team' });
+  } catch (error) {
+    console.error('Leave team error:', error);
+    const errorMessage = error.message || 'Unknown error';
+    if (errorMessage.includes('relation') && errorMessage.includes('does not exist')) {
+      res.status(500).json({ error: 'Database tables not found. Please run the setup script to create teams and team_members tables.' });
+    } else {
+      res.status(500).json({ error: `Server error: ${errorMessage}` });
+    }
+  }
+});
+
 app.get('/api/teams/:id/members', async (req, res) => {
   try {
     const teamId = parseInt(req.params.id);
