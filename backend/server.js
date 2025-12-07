@@ -363,7 +363,41 @@ app.get('/api/teams/:id', async (req, res) => {
       [teamId]
     );
 
-    res.json({ ...result.rows[0], members: membersResult.rows });
+    // get tasks for each team member
+    const membersWithTasks = await Promise.all(
+      membersResult.rows.map(async (member) => {
+        // get tasks: assigned to member OR created by member OR in this team and assigned to member
+        const tasksResult = await pool.query(
+          `SELECT * FROM tasks 
+           WHERE (
+             assignee_id = $1 
+             OR (user_id = $1 AND team_id = $2)
+             OR (team_id = $2 AND assignee_id = $1)
+           )
+           ORDER BY created_at DESC`,
+          [member.user_id, teamId]
+        );
+
+        const tasks = tasksResult.rows;
+        const total = tasks.length;
+        const completed = tasks.filter(t => t.status === 'Completed').length;
+        const inProgress = tasks.filter(t => t.status === 'In Progress').length;
+        const pending = tasks.filter(t => t.status === 'Pending' || !t.status).length;
+
+        return {
+          ...member,
+          tasks: tasks,
+          taskStats: {
+            total,
+            completed,
+            inProgress,
+            pending
+          }
+        };
+      })
+    );
+
+    res.json({ ...result.rows[0], members: membersWithTasks });
   } catch (error) {
     console.error('Get team error:', error);
     const errorMessage = error.message || 'Unknown error';

@@ -171,17 +171,78 @@ async function showTeamDetails(teamId) {
       <div>
         <h3 style="margin: 0 0 12px 0;">Team Members (${team.members.length})</h3>
         <div class="members-list">
-          ${team.members.map(member => `
-            <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <div style="font-weight: 500;">${member.name}</div>
-                <div style="font-size: 12px; color: #6b7280;">${member.email} • ID: ${member.student_id || 'N/A'}</div>
+          ${team.members.map((member, index) => {
+            const stats = member.taskStats || { total: 0, completed: 0, inProgress: 0, pending: 0 };
+            const tasks = member.tasks || [];
+            const memberId = `member-${index}`;
+            
+            return `
+            <div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px; background: white;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <div style="font-weight: 500; font-size: 16px;">${member.name}</div>
+                    <span style="padding: 2px 8px; background: ${member.role === 'admin' ? '#fef3c7' : '#f3f4f6'}; border-radius: 4px; font-size: 11px;">
+                      ${member.role === 'admin' ? 'Admin' : 'Member'}
+                    </span>
+                  </div>
+                  <div style="font-size: 12px; color: #6b7280;">${member.email} • ID: ${member.student_id || 'N/A'}</div>
+                </div>
               </div>
-              <span style="padding: 4px 8px; background: ${member.role === 'admin' ? '#fef3c7' : '#f3f4f6'}; border-radius: 4px; font-size: 11px;">
-                ${member.role === 'admin' ? 'Admin' : 'Member'}
-              </span>
+              
+              <div style="margin-bottom: 12px; padding: 12px; background: #f9fafb; border-radius: 6px;">
+                <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px; color: #374151;">Task Statistics</div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                  <div style="text-align: center;">
+                    <div style="font-size: 20px; font-weight: bold; color: #111827;">${stats.total}</div>
+                    <div style="font-size: 11px; color: #6b7280;">Total</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 20px; font-weight: bold; color: #10b981;">${stats.completed}</div>
+                    <div style="font-size: 11px; color: #6b7280;">Completed</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 20px; font-weight: bold; color: #3b82f6;">${stats.inProgress}</div>
+                    <div style="font-size: 11px; color: #6b7280;">In Progress</div>
+                  </div>
+                  <div style="text-align: center;">
+                    <div style="font-size: 20px; font-weight: bold; color: #6b7280;">${stats.pending}</div>
+                    <div style="font-size: 11px; color: #6b7280;">Pending</div>
+                  </div>
+                </div>
+              </div>
+              
+              ${tasks.length > 0 ? `
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div style="font-size: 13px; font-weight: 500; color: #374151;">Assigned Tasks (${tasks.length})</div>
+                  <button class="toggle-tasks-btn" data-member-id="${memberId}" style="padding: 4px 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; font-size: 11px; color: #6366f1;">Show Tasks</button>
+                </div>
+                <div id="${memberId}-tasks" style="display: none; max-height: 300px; overflow-y: auto;">
+                  ${tasks.map(task => {
+                    const statusColor = task.status === 'Completed' ? '#10b981' : task.status === 'In Progress' ? '#3b82f6' : '#6b7280';
+                    return `
+                    <div style="padding: 10px; margin-bottom: 6px; border-left: 3px solid ${statusColor}; background: #f9fafb; border-radius: 4px;">
+                      <div style="font-weight: 500; font-size: 13px; margin-bottom: 4px;">${task.title}</div>
+                      <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">${task.description || 'No description'}</div>
+                      <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 10px;">
+                        <span style="padding: 2px 6px; background: ${statusColor}; color: white; border-radius: 3px;">${task.status || 'Pending'}</span>
+                        <span style="color: #6b7280;">${task.category}</span>
+                        ${task.time ? `<span style="color: #6b7280;">⏱ ${task.time}</span>` : ''}
+                      </div>
+                    </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+              ` : `
+              <div style="padding: 12px; text-align: center; color: #6b7280; font-size: 12px; background: #f9fafb; border-radius: 4px;">
+                No tasks assigned yet
+              </div>
+              `}
             </div>
-          `).join('')}
+            `;
+          }).join('')}
         </div>
       </div>
       ${canLeave ? `
@@ -207,6 +268,23 @@ async function showTeamDetails(teamId) {
           console.error('Failed to copy:', err);
           alert('Failed to copy code. Code: ' + code);
         });
+      });
+    });
+    
+    // handle toggle tasks buttons
+    document.querySelectorAll('.toggle-tasks-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const memberId = btn.getAttribute('data-member-id');
+        const tasksDiv = document.getElementById(`${memberId}-tasks`);
+        if (tasksDiv) {
+          if (tasksDiv.style.display === 'none') {
+            tasksDiv.style.display = 'block';
+            btn.textContent = 'Hide Tasks';
+          } else {
+            tasksDiv.style.display = 'none';
+            btn.textContent = 'Show Tasks';
+          }
+        }
       });
     });
     
