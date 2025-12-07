@@ -39,25 +39,15 @@ This is a full-stack web application for campus task collaboration. Students can
 
 ## Login Details
 
-For testing purposes, you can use these test credentials (after running the seed script):
+For testing purposes, you can use these test credentials:
 
 **Test Account:**
-- **Email:** testuser@example.com
-- **Password:** password123
-- **Student ID:** 12345678
+- **Email:** arnold@webtech.com
+- **Password:** arnold@123
 
-### Creating the Test User
+**Example:** Username: arnold@webtech.com | Password: arnold@123
 
-To create the test user in your database, run the seed script:
-
-```bash
-cd backend
-node seed_test_user.js
-```
-
-This will create a test user with the credentials above. If the user already exists, the script will inform you.
-
-**Alternative:** You can also register a new account manually through the registration form. Registration requires:
+**Note:** You can also register a new account through the registration form. Registration requires:
 - Name
 - Email
 - Student ID (8-12 digits)
@@ -280,16 +270,7 @@ Server code is in `backend/` folder.
    - Set `DATABASE_URL` environment variable to your remote database URL
    - SSL will be automatically enabled for remote connections
 
-4. (Optional) Create a test user for testing:
-   ```bash
-   node seed_test_user.js
-   ```
-   This creates a test account with:
-   - Email: testuser@example.com
-   - Password: password123
-   - Student ID: 12345678
-
-5. Start the server (for local development):
+4. Start the server (for local development):
    ```bash
    npm run dev
    ```
