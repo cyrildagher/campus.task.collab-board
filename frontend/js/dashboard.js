@@ -140,7 +140,12 @@ window.loadOverviewStats = async function() {
 // Load assigned tasks grouped by team member
 async function loadAssignedTasksByMember() {
   try {
-    const tasks = await tasksAPI.getAll();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) {
+      console.error('No user ID found');
+      return;
+    }
+    const tasks = await tasksAPI.getAll(user.id);
     const users = await usersAPI.getAll();
     
     // Filter tasks that have assignees

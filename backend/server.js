@@ -89,11 +89,31 @@ app.post('/api/auth/login', async (req, res) => {
 // tasks routes
 app.get('/api/tasks', async (req, res) => {
   try {
+    const userId = req.query.user_id ? parseInt(req.query.user_id) : null;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'user_id query parameter is required' });
+    }
+    
+    // Get tasks where:
+    // 1. User created the task (user_id = userId)
+    // 2. Task is assigned to the user (assignee_id = userId)
+    // 3. Task is in a team the user is part of (team_id IN user's teams)
     const result = await pool.query(
-      `SELECT t.*, u.name as assignee_name 
+      `SELECT DISTINCT t.*, u.name as assignee_name, 
+              team.name as team_name
        FROM tasks t 
-       LEFT JOIN users u ON t.assignee_id = u.id 
-       ORDER BY t.created_at DESC`
+       LEFT JOIN users u ON t.assignee_id = u.id
+       LEFT JOIN teams team ON t.team_id = team.id
+       WHERE (
+         t.user_id = $1 
+         OR t.assignee_id = $1
+         OR t.team_id IN (
+           SELECT team_id FROM team_members WHERE user_id = $1
+         )
+       )
+       ORDER BY t.created_at DESC`,
+      [userId]
     );
     res.json(result.rows);
   } catch (error) {
@@ -104,18 +124,22 @@ app.get('/api/tasks', async (req, res) => {
 
 app.post('/api/tasks', async (req, res) => {
   try {
-    const { title, description, category, tags, time, status, assignee_id, team_id } = req.body;
+    const { title, description, category, tags, time, status, assignee_id, team_id, user_id } = req.body;
 
     if (!title || !category) {
       return res.status(400).json({ error: 'Title and category are required' });
+    }
+
+    if (!user_id) {
+      return res.status(400).json({ error: 'user_id is required' });
     }
 
     // Default status to 'Pending' if not provided
     const taskStatus = status || 'Pending';
 
     const result = await pool.query(
-      'INSERT INTO tasks (title, description, category, tags, time, status, assignee_id, team_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      [title, description || '', category, tags || [], time || '1h 00m', taskStatus, assignee_id || null, team_id || null]
+      'INSERT INTO tasks (title, description, category, tags, time, status, assignee_id, team_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+      [title, description || '', category, tags || [], time || '1h 00m', taskStatus, assignee_id || null, team_id || null, user_id]
     );
 
     res.status(201).json(result.rows[0]);

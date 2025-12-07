@@ -9,7 +9,12 @@ const categories = ['Academics', 'Recreational', 'Sports', 'Events'];
 // get tasks from API (with localStorage fallback)
 async function getTasks() {
   try {
-    const tasks = await tasksAPI.getAll();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) {
+      console.error('No user ID found in localStorage');
+      return [];
+    }
+    const tasks = await tasksAPI.getAll(user.id);
     return tasks;
   } catch (error) {
     console.error('Failed to fetch tasks:', error);
@@ -485,6 +490,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // parse tags from comma-separated string
     const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
     
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.id) {
+      alert('You must be logged in to create tasks');
+      return;
+    }
+    
     const newTask = {
       title: title,
       description: description,
@@ -493,7 +504,8 @@ document.addEventListener('DOMContentLoaded', () => {
       time: time,
       status: status,
       assignee_id: assigneeId ? parseInt(assigneeId) : null,
-      team_id: teamId ? parseInt(teamId) : null
+      team_id: teamId ? parseInt(teamId) : null,
+      user_id: user.id
     };
     
     try {

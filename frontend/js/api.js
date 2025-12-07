@@ -66,8 +66,15 @@ const authAPI = {
 
 // tasks API calls
 const tasksAPI = {
-  getAll: async () => {
-    return apiRequest('/tasks');
+  getAll: async (userId) => {
+    if (!userId) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      userId = user.id;
+    }
+    if (!userId) {
+      throw new Error('User ID is required to fetch tasks');
+    }
+    return apiRequest(`/tasks?user_id=${userId}`);
   },
   
   create: async (task) => {
