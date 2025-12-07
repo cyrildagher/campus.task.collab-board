@@ -1,55 +1,132 @@
 # Campus Task Collaboration Board
 
-A task management web app I built for managing tasks around campus. This was my project for the web technologies class - basically a simple board where you can organize tasks by category.
+A task management web app I built for managing tasks around campus. This was my project for the web technologies class - basically a collaboration board where students can organize tasks, work in teams, and track progress together.
 
 **Made by:** Cyril Michael Dagher  
 **Student ID:** 10012300026
 
-**Live Demo:** [https://cyrildagher.github.io/campus.task.collab-board/](https://cyrildagher.github.io/campus.task.collab-board/)
+---
+
+## Project Overview
+
+This is a full-stack web application for campus task collaboration. Students can register (with Student ID validation), create or join teams, assign tasks to team members, and track task progress through three statuses (Pending, In Progress, Completed). The app features a clean, modern UI with team management, task assignment, and comprehensive dashboard views.
+
+**Key Functionality:**
+- Student-only registration with Student ID validation
+- Team creation and joining via unique team codes
+- Task creation, assignment, and status management
+- Team member management and collaboration
+- Dashboard with statistics and assigned tasks view
+- Real-time task status updates
+
+---
+
+## Deployment Links
+
+### Frontend
+- **GitHub Pages:** [https://cyrildagher.github.io/campus.task.collab-board/](https://cyrildagher.github.io/campus.task.collab-board/)
+- **GitHub Repository:** [Link to your frontend repository]
+
+### Backend
+- **Render:** [https://campus-task-collab-board-gqd5.onrender.com](https://campus-task-collab-board-gqd5.onrender.com)
+- **API Base URL:** [https://campus-task-collab-board-gqd5.onrender.com/api](https://campus-task-collab-board-gqd5.onrender.com/api)
+- **GitHub Repository:** [Link to your backend repository]
+
+### Database
+- **PostgreSQL:** Hosted on Render (included with backend deployment)
+
+---
+
+## Login Details
+
+For testing purposes, you can register a new account or use these test credentials:
+
+**Test Account:**
+- **Email:** testuser@example.com
+- **Password:** password123
+- **Student ID:** 12345678
+
+*Note: You may need to register a new account as the test account may not exist. Registration requires:*
+- Name
+- Email
+- Student ID (8-12 digits)
+- Password
 
 ---
 
 ## What This Project Is About
 
-So this is basically a task management system where students and staff can create and organize tasks. I tried to keep the design simple and clean - nothing too fancy, just something that works well. You can create tasks, put them in different categories, mark them as done, and delete them if needed.
+So this is basically a collaboration board for students to manage tasks together. I tried to keep the design simple and clean - nothing too fancy, just something that works well. You can create teams, assign tasks to team members, track progress with different statuses, and collaborate on projects. It's built specifically for students (requires Student ID to register) and supports team-based task management.
+
+---
+
+## Feature Checklist
+
+### User Registration & Authentication
+- ✅ Secure user registration and login
+- ✅ Students only restriction (Student ID validation required)
+- ✅ Allow users to create or join a project team
+
+### Task Management
+- ✅ Create project tasks
+- ✅ Assign project tasks to team members
+- ✅ Update project tasks
+- ✅ Delete project tasks
+- ✅ Display tasks by status (Pending, In Progress, Completed)
+
+### Team Dashboard
+- ✅ Show all team members
+- ✅ Show assigned tasks for each team member
+- ✅ Include summary charts or indicators (total tasks, completed count)
+
+### Admin Panel / Deployment
+- ✅ Host backend on Render (Node.js + PostgreSQL)
+- ✅ Host frontend on GitHub Pages
+- ✅ Integrate with backend API
 
 ---
 
 ## Features
 
 ### Login/Registration
-- You can register and login (Students only - requires Student ID)
-- Student ID validation (8-12 digits required)
+- You can register and login (Students only!)
+- Student ID validation - must be 8-12 digits (enforced on both frontend and backend)
 - Passwords are hashed with bcryptjs (learned this in class!)
 - You need to be logged in to use the app
+- Registration form validates student ID format before submission
 
 ### Task Stuff
 - **Create Tasks**: Add tasks with title, description, category, tags, time estimates, status, assignee, and team
-- **Task Status**: Three statuses available - Pending, In Progress, Completed
-- **Task Assignment**: Assign tasks to team members
+- **Task Status**: Three statuses available - Pending, In Progress, Completed (with color-coded dropdown)
+- **Task Assignment**: Assign tasks to any team member when creating or editing
+- **Status Management**: Change task status directly from the task card with a dropdown
 - **Board View**: Tasks are organized in 4 categories:
   - Academics
   - Recreational
   - Sports
   - Events
-- **Complete Tasks**: Just check the box or change status dropdown
+- **Complete Tasks**: Just check the box or change status dropdown to "Completed"
 - **Delete Tasks**: There's a delete button with a confirmation popup
 - **Completed Section**: All your done tasks go here
 
 ### Teams & Collaboration
-- **Create Teams**: Create project teams with name and description
-- **Join Teams**: Join existing teams
-- **Team Members**: View all team members with their roles (Admin/Member)
-- **Team Dashboard**: See all teams you're part of
-- **Assigned Tasks**: View tasks assigned to each team member in the Overview section
+- **Create Teams**: Create project teams with name and description (you automatically become admin)
+- **Join Teams**: Join existing teams using a 6-character team code
+- **Team Codes**: Each team gets a unique code (like "ABC123") that you can share with others
+- **Team Members**: View all team members with their details (name, email, student ID, role)
+- **Team Dashboard**: See all teams you're part of with member counts and previews
+- **Team Details**: Click "View" on any team to see full member list and team code
+- **Copy Team Code**: Easy copy button to share your team code
+- **Assigned Tasks**: View tasks assigned to each team member in the Overview section (grouped by member)
+- **Task-Team Linking**: Link tasks to specific teams when creating them
 
 ### Dashboard
-- **Overview**: Shows stats about your tasks and assigned tasks grouped by team member
-- **Projects**: This is the main board where you manage tasks
-- **Teams**: View and manage your teams
+- **Overview**: Shows stats about your tasks (total, completed, pending) and assigned tasks grouped by team member with status breakdowns
+- **Projects**: This is the main board where you manage tasks (kanban-style by category)
+- **Teams**: View all your teams, create new ones, or join existing teams with a code
 - **Completed**: See all your completed tasks
 - **Milestones**: Track milestones (still working on this)
-- **Planning**: Planning section (also still working on it)
+- **Planning**: Planning section with tips and upcoming tasks (also still working on it)
 - **Profile**: Dropdown menu to logout
 
 ### UI
@@ -111,10 +188,11 @@ All the client-side code is in `frontend/` folder.
 - **`css/login.css`** - Login page styling
 
 **JavaScript:**
-- **`js/api.js`** - Handles all API calls
+- **`js/api.js`** - Handles all API calls (auth, tasks, teams, users)
 - **`js/auth.js`** - Login/registration logic
-- **`js/tasks.js`** - Task creation and management
-- **`js/dashboard.js`** - Dashboard navigation and UI stuff
+- **`js/tasks.js`** - Task creation, management, and status handling
+- **`js/teams.js`** - Team creation, joining, and member management
+- **`js/dashboard.js`** - Dashboard navigation, stats, and assigned tasks display
 
 ### Backend
 Server code is in `backend/` folder.
@@ -168,11 +246,21 @@ Server code is in `backend/` folder.
       ```
       Replace `your_username` and `your_password` with your PostgreSQL credentials.
    
-   c. Run the setup script to create tables and indexes:
-      ```bash
-      psql -U your_username -d campus_task_db -f setup_local_db.sql
-      ```
-      Or open `backend/setup_local_db.sql` in pgAdmin and run it.
+   c. Create the database tables. You'll need to create:
+      - `users` table with `student_id` field
+      - `tasks` table with `status` enum (Pending, In Progress, Completed), `assignee_id`, and `team_id`
+      - `teams` table with `team_code` field (6-character unique codes)
+      - `team_members` table for team memberships
+      - All necessary indexes for performance
+      
+      The database schema includes:
+      - User registration with Student ID validation
+      - Task status management (enum type)
+      - Team creation with automatic code generation
+      - Task assignment to team members
+      - Team membership tracking
+      
+      See the backend code comments or `REQUIREMENTS_CHECKLIST.md` for detailed schema information.
    
    **Note:** Using a local database will be MUCH faster than connecting to the remote Render database. The connection will automatically detect local vs remote and disable SSL for local connections.
    
@@ -218,10 +306,11 @@ http://localhost:3000/api
 - `DELETE /api/tasks/:id` - Delete a task
 
 ### Teams
-- `POST /api/teams` - Create a team
+- `POST /api/teams` - Create a team (generates unique 6-character code)
 - `GET /api/teams` - Get all teams
 - `GET /api/teams/:id` - Get team details with members
-- `POST /api/teams/:id/join` - Join a team
+- `POST /api/teams/:id/join` - Join a team by ID
+- `POST /api/teams/join-by-code` - Join a team using team code
 - `GET /api/users/:id/teams` - Get all teams for a user
 - `GET /api/teams/:id/members` - Get team members
 
@@ -239,7 +328,7 @@ For more details, check `Documentation.txt`.
 
 ### Register
 1. Open the app
-2. Fill in name, email, and password
+2. Fill in name, email, Student ID (8-12 digits), and password
 3. Click Register
 4. Then you can login
 
@@ -254,22 +343,34 @@ For more details, check `Documentation.txt`.
 3. Fill in the form:
    - Title (required)
    - Description (optional)
+   - Status (Pending, In Progress, or Completed - defaults to Pending)
+   - Assign To (optional - select a team member)
+   - Team (optional - link to a team you're part of)
    - Time estimate (optional)
    - Tags (comma separated, optional)
 4. Click "Add Task"
 
 ### Manage Tasks
-- **Complete**: Just check the checkbox
+- **Change Status**: Use the status dropdown on any task card (Pending → In Progress → Completed)
+- **Complete**: Just check the checkbox (automatically sets to Completed)
 - **View Completed**: Go to the Completed section
 - **Delete**: Click the three dots (⋯) and confirm
+- **Assign Tasks**: Select an assignee when creating or editing tasks
+
+### Create or Join a Team
+1. Go to "Teams" in the sub-navigation
+2. **To Create**: Click "+ Create Team", enter name and description, then create
+3. **To Join**: Click "Join Team", enter the 6-character team code, then join
+4. View team details to see all members and copy the team code to share
 
 ### Navigation
-- **Start**: Welcome page
-- **Projects**: Main task board
-- **Overview**: Task stats
+- **Start**: Welcome page with feature overview
+- **Projects**: Main task board (kanban by category)
+- **Overview**: Task stats and assigned tasks by team member
+- **Teams**: View and manage your teams
 - **Completed**: Done tasks
 - **Milestones**: Milestone stuff (work in progress)
-- **Planning**: Planning section (also work in progress)
+- **Planning**: Planning section with tips (also work in progress)
 
 ---
 
@@ -319,33 +420,51 @@ I went for a simple, minimal look:
 
 ### Phase 2: Backend
 - Set up Express
-- Built authentication
-- Created API endpoints
+- Built authentication with student ID validation
+- Created API endpoints (auth, tasks, teams, users)
 - Connected to PostgreSQL
 - Added password hashing
+- Implemented team system with code-based joining
+- Added task assignment functionality
+- Created status enum for tasks
 
 ### Phase 3: Frontend
-- Made login/registration pages
-- Built the dashboard
-- Created the task board
+- Made login/registration pages (with Student ID field)
+- Built the dashboard with multiple views
+- Created the task board (kanban-style)
 - Added modals and navigation
+- Implemented team management UI
+- Added task assignment dropdowns
+- Created status management with dropdowns
+- Built assigned tasks display grouped by member
 
-### Phase 4: Testing & Fixes
+### Phase 4: Collaboration Features
+- Added team creation and joining system
+- Implemented team code functionality
+- Built task assignment to team members
+- Created status management (Pending, In Progress, Completed)
+- Added team members display
+- Built assigned tasks view grouped by member
+
+### Phase 5: Testing & Fixes
 - Connected everything together
-- Tested features
+- Tested all features (teams, assignments, status)
 - Fixed bugs (there were a lot)
-- Made some UI improvements
+- Made UI improvements (removed emojis, improved navigation)
+- Optimized database connections for local development
 
 ---
 
 ## Things I Want to Add Later
 
 - [ ] Proper JWT tokens (right now it's basic)
-- [ ] Assign tasks to specific users
+- [x] Assign tasks to specific users ✅ (Done!)
+- [x] Team collaboration features ✅ (Done!)
+- [x] Task status management ✅ (Done!)
 - [ ] Due dates for tasks
 - [ ] Task priorities
 - [ ] File uploads
-- [ ] Comments on tasks
+- [ ] Comments on tasks (the field exists but UI not built yet)
 - [ ] Search and filter
 - [ ] Drag and drop to reorder
 - [ ] Dark mode
