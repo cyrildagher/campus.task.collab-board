@@ -1,5 +1,10 @@
 // API configuration and utility functions
-const API_BASE_URL = 'https://campus-task-collab-board-gqd5.onrender.com/api';
+// Use local API if running on localhost, otherwise use Render
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000/api'
+  : 'https://campus-task-collab-board-gqd5.onrender.com/api';
+
+console.log('API Base URL:', API_BASE_URL);
 
 // helper function to make API requests
 async function apiRequest(endpoint, options = {}) {
@@ -14,26 +19,40 @@ async function apiRequest(endpoint, options = {}) {
   };
 
   try {
+    console.log(`Making API request to: ${API_BASE_URL}${endpoint}`, config);
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    const data = await response.json();
+    
+    // Check if response is JSON
+    const contentType = response.headers.get('content-type');
+    let data;
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      console.error('Non-JSON response:', text);
+      throw new Error(`Server returned non-JSON response: ${text}`);
+    }
     
     if (!response.ok) {
-      throw new Error(data.error || 'Something went wrong');
+      console.error('API Error Response:', data);
+      throw new Error(data.error || `HTTP ${response.status}: ${response.statusText}`);
     }
     
     return data;
   } catch (error) {
     console.error('API Error:', error);
+    console.error('Endpoint:', endpoint);
+    console.error('Config:', config);
     throw error;
   }
 }
 
 // auth API calls
 const authAPI = {
-  register: async (name, email, password) => {
+  register: async (name, email, password, student_id) => {
     return apiRequest('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({ name, email, password, student_id })
     });
   },
   
@@ -69,6 +88,53 @@ const tasksAPI = {
     return apiRequest(`/tasks/${id}`, {
       method: 'DELETE'
     });
+  }
+};
+
+// teams API calls
+const teamsAPI = {
+  create: async (team) => {
+    return apiRequest('/teams', {
+      method: 'POST',
+      body: JSON.stringify(team)
+    });
+  },
+  
+  getAll: async () => {
+    return apiRequest('/teams');
+  },
+  
+  getById: async (id) => {
+    return apiRequest(`/teams/${id}`);
+  },
+  
+  join: async (teamId, userId) => {
+    return apiRequest(`/teams/${teamId}/join`, {
+      method: 'POST',
+      body: JSON.stringify({ user_id: userId })
+    });
+  },
+  
+  joinByCode: async (teamCode, userId) => {
+    return apiRequest('/teams/join-by-code', {
+      method: 'POST',
+      body: JSON.stringify({ team_code: teamCode, user_id: userId })
+    });
+  },
+  
+  getUserTeams: async (userId) => {
+    return apiRequest(`/users/${userId}/teams`);
+  },
+  
+  getMembers: async (teamId) => {
+    return apiRequest(`/teams/${teamId}/members`);
+  }
+};
+
+// users API calls
+const usersAPI = {
+  getAll: async () => {
+    return apiRequest('/users');
   }
 };
 

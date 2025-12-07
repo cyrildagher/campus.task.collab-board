@@ -618,6 +618,7 @@ body {
 .feature-icon {
     font-size: 48px;
     margin-bottom: 16px;
+    line-height: 1;
 }
 
 .feature-card h3 {
@@ -826,9 +827,17 @@ body {
 }
 
 .tip-icon {
-    font-size: 20px;
-    color: #0ea5e9;
+    font-size: 18px;
+    font-weight: 600;
+    color: #6366f1;
     flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    border-radius: 50%;
 }
 
 .tip-item p {

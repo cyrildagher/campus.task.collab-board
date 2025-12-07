@@ -32,10 +32,11 @@
         </form>
 
         <div id="registerBox" style="display:none; margin-top:20px;">
-            <h3>Create Account</h3>
+            <h3>Create Account (Students Only)</h3>
             <form id="registerForm" autocomplete="off">
                 <input type="text" id="name" placeholder="Full name" required />
                 <input type="email" id="regEmail" placeholder="Email" required/>
+                <input type="text" id="studentId" placeholder="Student ID (8-12 digits)" required pattern="[0-9]{8,12}" title="Student ID must be 8-12 digits"/>
                 <input type="password" id="regPassword" placeholder="Password" required/>
                 <div class="auth-actions">
                     <button type="submit" class="btn-primary">Create</button>

@@ -55,9 +55,12 @@ function createTaskCard(task) {
     `<span class="tag ${getTagClass(tag)}">${tag}</span>`
   ).join('');
 
+  const status = task.status || (task.completed ? 'Completed' : 'Pending');
+  const isCompleted = status === 'Completed';
+  
   card.innerHTML = `
     <div class="task-header">
-      <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
+      <input type="checkbox" class="task-checkbox" ${isCompleted ? 'checked' : ''}>
       <h4>${task.title}</h4>
       <span class="task-menu">⋯</span>
     </div>
@@ -65,11 +68,17 @@ function createTaskCard(task) {
     <div class="task-tags">
       ${tagsHtml}
     </div>
-    <div class="task-footer">
+    <div class="task-footer" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+      <select class="task-status-select" style="padding: 2px 6px; border-radius: 4px; font-size: 11px; border: 1px solid #d1d5db; background: ${status === 'Completed' ? '#10b981' : status === 'In Progress' ? '#3b82f6' : '#6b7280'}; color: white;">
+        <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>Pending</option>
+        <option value="In Progress" ${status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+        <option value="Completed" ${status === 'Completed' ? 'selected' : ''}>Completed</option>
+      </select>
+      ${task.assignee_name ? `<div class="task-assignee" style="font-size: 11px; color: #6b7280;">Assigned: ${task.assignee_name}</div>` : ''}
       <div class="task-comments">
-        <span>${task.comments}</span>
+        <span>Comments: ${task.comments || 0}</span>
       </div>
-      <div class="task-time">Est. ${task.time}</div>
+      <div class="task-time">Time: ${task.time}</div>
     </div>
   `;
 
@@ -77,7 +86,8 @@ function createTaskCard(task) {
   const checkbox = card.querySelector('.task-checkbox');
   checkbox.addEventListener('change', async () => {
     try {
-      await tasksAPI.update(task.id, { completed: checkbox.checked });
+      const newStatus = checkbox.checked ? 'Completed' : 'Pending';
+      await tasksAPI.update(task.id, { status: newStatus });
       renderTasks();
       renderCompletedTasks();
     } catch (error) {
@@ -86,13 +96,29 @@ function createTaskCard(task) {
       const tasks = await getTasks();
       const taskIndex = tasks.findIndex(t => t.id === task.id);
       if (taskIndex !== -1) {
-        tasks[taskIndex].completed = checkbox.checked;
+        tasks[taskIndex].status = checkbox.checked ? 'Completed' : 'Pending';
         saveTasks(tasks);
         renderTasks();
         renderCompletedTasks();
       }
     }
   });
+
+  // handle status change
+  const statusSelect = card.querySelector('.task-status-select');
+  if (statusSelect) {
+    statusSelect.addEventListener('change', async (e) => {
+      try {
+        const newStatus = e.target.value;
+        await tasksAPI.update(task.id, { status: newStatus });
+        renderTasks();
+        renderCompletedTasks();
+      } catch (error) {
+        console.error('Failed to update task status:', error);
+        alert('Failed to update task status. Please try again.');
+      }
+    });
+  }
 
   // handle menu click (delete task)
   const menu = card.querySelector('.task-menu');
@@ -117,7 +143,11 @@ async function renderTasks() {
     const taskList = column.querySelector('.task-list');
     taskList.innerHTML = '';
     
-    const categoryTasks = tasks.filter(t => t.category === category && !t.completed);
+    // Filter tasks by category and status (show Pending and In Progress, not Completed)
+    const categoryTasks = tasks.filter(t => {
+      const status = t.status || (t.completed ? 'Completed' : 'Pending');
+      return t.category === category && status !== 'Completed';
+    });
     categoryTasks.forEach(task => {
       taskList.appendChild(createTaskCard(task));
     });
@@ -127,7 +157,7 @@ async function renderTasks() {
 // render completed tasks
 async function renderCompletedTasks() {
   const tasks = await getTasks();
-  const completedTasks = tasks.filter(t => t.completed);
+  const completedTasks = tasks.filter(t => t.status === 'Completed' || t.completed);
   const completedList = document.getElementById('completedTasksList');
   
   completedList.innerHTML = '';
@@ -254,45 +284,69 @@ window.closeDeleteModal = closeDeleteModal;
 
 // switch between views (for Projects sub-navigation)
 function switchView(viewName) {
-  // only switch if we're in projects view
-  const projectsView = document.getElementById('projectsView');
-  if (projectsView && projectsView.style.display === 'none') {
-    return; // don't switch if not in projects view
+  // First, ensure we're in the projects main view
+  if (typeof switchMainView === 'function') {
+    const projectsMainView = document.getElementById('projectsView');
+    if (projectsMainView && projectsMainView.style.display === 'none') {
+      // Switch to projects main view first
+      switchMainView('projects');
+    }
   }
   
-  // hide all project sub-views
-  const projectViews = ['tasksView', 'overviewView', 'milestonesView', 'completedView'];
-  projectViews.forEach(viewId => {
+  // Hide all project sub-views
+  const projectSubViews = ['overviewView', 'milestonesView', 'completedView', 'teamsView'];
+  projectSubViews.forEach(viewId => {
     const view = document.getElementById(viewId);
     if (view) {
       view.style.display = 'none';
     }
   });
   
-  // remove active class from all nav links
+  // Show/hide the projectsView kanban board based on view
+  const projectsView = document.getElementById('projectsView');
+  if (projectsView) {
+    if (viewName === 'tasks') {
+      // Show the kanban board for tasks view
+      projectsView.style.display = 'block';
+    } else {
+      // Hide the kanban board for other sub-views
+      projectsView.style.display = 'none';
+    }
+  }
+  
+  // Remove active class from all sub-nav links
   document.querySelectorAll('.sub-nav-link').forEach(link => {
     link.classList.remove('active');
   });
   
-  // show selected view
-  const viewElement = document.getElementById(viewName + 'View');
-  if (viewElement) {
-    viewElement.style.display = 'block';
+  // Show selected sub-view (if not tasks, which uses projectsView)
+  if (viewName !== 'tasks') {
+    const viewElement = document.getElementById(viewName + 'View');
+    if (viewElement) {
+      viewElement.style.display = 'block';
+    }
   }
   
-  // add active class to clicked nav link
+  // Add active class to clicked nav link
   const activeLink = document.querySelector(`[data-view="${viewName}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
   }
   
-  // render content based on view
+  // Render content based on view
   if (viewName === 'completed') {
     renderCompletedTasks();
   } else if (viewName === 'overview') {
     if (typeof loadOverviewStats === 'function') {
       loadOverviewStats();
     }
+  } else if (viewName === 'teams') {
+    if (typeof renderTeams === 'function') {
+      renderTeams();
+    }
+  } else if (viewName === 'tasks') {
+    // Re-render tasks when switching back to tasks view
+    renderTasks();
   }
 }
 
@@ -369,6 +423,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  // Load users and teams for dropdowns
+  async function loadTaskFormData() {
+    try {
+      const users = await usersAPI.getAll();
+      const assigneeSelect = document.getElementById('taskAssignee');
+      if (assigneeSelect) {
+        assigneeSelect.innerHTML = '<option value="">Unassigned</option>';
+        users.forEach(user => {
+          const option = document.createElement('option');
+          option.value = user.id;
+          option.textContent = `${user.name} (${user.student_id || user.email})`;
+          assigneeSelect.appendChild(option);
+        });
+      }
+
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.id) {
+        const userTeams = await teamsAPI.getUserTeams(user.id);
+        const teamSelect = document.getElementById('taskTeam');
+        if (teamSelect) {
+          teamSelect.innerHTML = '<option value="">No Team</option>';
+          userTeams.forEach(team => {
+            const option = document.createElement('option');
+            option.value = team.id;
+            option.textContent = team.name;
+            teamSelect.appendChild(option);
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load form data:', error);
+    }
+  }
+
+  // Load form data when modal opens
+  const originalShowTaskModal = window.showTaskModal;
+  window.showTaskModal = function(category) {
+    originalShowTaskModal(category);
+    loadTaskFormData();
+  };
+
   // handle form submission
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -378,6 +473,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const time = document.getElementById('taskTime').value.trim() || '1h 00m';
     const tagsInput = document.getElementById('taskTags').value.trim();
     const category = document.getElementById('taskCategory').value;
+    const status = document.getElementById('taskStatus').value || 'Pending';
+    const assigneeId = document.getElementById('taskAssignee').value || null;
+    const teamId = document.getElementById('taskTeam').value || null;
     
     if (!title) {
       alert('Please enter a task title');
@@ -392,7 +490,10 @@ document.addEventListener('DOMContentLoaded', () => {
       description: description,
       category: category,
       tags: tags,
-      time: time
+      time: time,
+      status: status,
+      assignee_id: assigneeId ? parseInt(assigneeId) : null,
+      team_id: teamId ? parseInt(teamId) : null
     };
     
     try {

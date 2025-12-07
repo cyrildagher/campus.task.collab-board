@@ -13,7 +13,7 @@
     <!-- top navigation bar -->
     <div class="top-nav">
         <div class="nav-left">
-            <div class="logo">t.</div>
+            <div class="logo" id="logoLink" style="cursor: pointer;" title="Go to Start">t.</div>
             <nav class="main-nav">
                 <a href="#" class="nav-link" data-main-view="start">Start</a>
                 <a href="#" class="nav-link active" data-main-view="projects">Projects</a>
@@ -44,6 +44,7 @@
         <div class="sub-nav">
             <a href="#" class="sub-nav-link" data-view="overview">Overview</a>
             <a href="#" class="sub-nav-link active" data-view="tasks">Tasks</a>
+            <a href="#" class="sub-nav-link" data-view="teams">Teams</a>
             <a href="#" class="sub-nav-link" data-view="milestones">Milestones</a>
             <a href="#" class="sub-nav-link" data-view="completed">Completed Tasks</a>
         </div>
@@ -134,6 +135,20 @@
         </div>
     </div>
 
+    <!-- teams view -->
+    <div id="teamsView" class="view-section" style="display: none;">
+        <div class="completed-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Teams</h2>
+                <div style="display: flex; gap: 12px;">
+                    <button id="joinTeamBtn" class="btn-secondary" style="padding: 8px 16px;">Join Team</button>
+                    <button id="createTeamBtn" class="btn-primary" style="padding: 8px 16px;">+ Create Team</button>
+                </div>
+            </div>
+            <div id="teamsList" class="teams-list"></div>
+        </div>
+    </div>
+
     <!-- milestones view -->
     <div id="milestonesView" class="view-section" style="display: none;">
         <div class="completed-container">
@@ -168,6 +183,7 @@
                 <h3>Tasks by Category</h3>
                 <div class="breakdown-list" id="categoryBreakdown"></div>
             </div>
+            <div id="assignedTasksSection"></div>
         </div>
     </div>
 
@@ -184,19 +200,19 @@
                     <h3>Planning Tips</h3>
                     <div class="tips-list">
                         <div class="tip-item">
-                            <span class="tip-icon">✓</span>
+                            <span class="tip-icon">•</span>
                             <p>Break large tasks into smaller, manageable steps</p>
                         </div>
                         <div class="tip-item">
-                            <span class="tip-icon">⏰</span>
+                            <span class="tip-icon">•</span>
                             <p>Set realistic time estimates for each task</p>
                         </div>
                         <div class="tip-item">
-                            <span class="tip-icon">🏷️</span>
+                            <span class="tip-icon">•</span>
                             <p>Use tags to prioritize and organize tasks</p>
                         </div>
                         <div class="tip-item">
-                            <span class="tip-icon">📅</span>
+                            <span class="tip-icon">•</span>
                             <p>Review and update your tasks regularly</p>
                         </div>
                     </div>
@@ -220,6 +236,26 @@
                 <div class="form-group">
                     <label for="taskDescription">Description</label>
                     <textarea id="taskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="taskStatus">Status</label>
+                    <select id="taskStatus">
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskAssignee">Assign To (Optional)</label>
+                    <select id="taskAssignee">
+                        <option value="">Unassigned</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskTeam">Team (Optional)</label>
+                    <select id="taskTeam">
+                        <option value="">No Team</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="taskTime">Estimated Time (e.g., 2h 30m)</label>
@@ -252,8 +288,67 @@
         </div>
     </div>
 
+    <!-- Team Creation Modal -->
+    <div id="teamModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Team</h2>
+                <span class="close-team-modal">&times;</span>
+            </div>
+            <form id="teamForm">
+                <div class="form-group">
+                    <label for="teamName">Team Name</label>
+                    <input type="text" id="teamName" required>
+                </div>
+                <div class="form-group">
+                    <label for="teamDescription">Description</label>
+                    <textarea id="teamDescription" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel-team">Cancel</button>
+                    <button type="submit" class="btn-submit">Create Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Details Modal -->
+    <div id="teamDetailsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="teamDetailsTitle">Team Details</h2>
+                <span class="close-team-details-modal">&times;</span>
+            </div>
+            <div id="teamDetailsContent">
+                <div id="teamMembersList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Team Modal -->
+    <div id="joinTeamModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join Team</h2>
+                <span class="close-join-team-modal">&times;</span>
+            </div>
+            <form id="joinTeamForm">
+                <div class="form-group">
+                    <label for="teamCode">Team Code</label>
+                    <input type="text" id="teamCode" placeholder="Enter 6-character team code" required maxlength="6" style="text-transform: uppercase; font-size: 18px; letter-spacing: 4px; text-align: center; font-weight: bold;">
+                    <small style="color: #6b7280; font-size: 12px; margin-top: 4px; display: block;">Ask the team creator for the team code</small>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel-join-team">Cancel</button>
+                    <button type="submit" class="btn-submit">Join Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/api.js"></script>
     <script src="js/tasks.js"></script>
+    <script src="js/teams.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

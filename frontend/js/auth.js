@@ -27,15 +27,24 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const studentId = document.getElementById('studentId').value.trim();
     const password = document.getElementById('regPassword').value;
 
-    if (!name || !email || !password) {
-      regMessage.textContent = 'Please fill in all fields.';
+    if (!name || !email || !password || !studentId) {
+      regMessage.textContent = 'Please fill in all fields including Student ID.';
+      regMessage.style.color = '#ef4444';
+      return;
+    }
+
+    // Validate student ID format
+    if (!/^\d{8,12}$/.test(studentId)) {
+      regMessage.textContent = 'Student ID must be 8-12 digits.';
+      regMessage.style.color = '#ef4444';
       return;
     }
 
     try {
-      await authAPI.register(name, email, password);
+      await authAPI.register(name, email, password, studentId);
       regMessage.textContent = 'Account created. You can now login.';
       regMessage.style.color = '#10b981';
       registerForm.reset();

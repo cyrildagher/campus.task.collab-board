@@ -2,46 +2,80 @@
 
 // switch main navigation views
 function switchMainView(viewName) {
-  // hide all main views
-  document.getElementById('startView').style.display = 'none';
-  document.getElementById('projectsView').style.display = 'none';
-  document.getElementById('planningView').style.display = 'none';
+  // Hide all main views
+  const allMainViews = ['startView', 'projectsView', 'planningView'];
+  allMainViews.forEach(viewId => {
+    const view = document.getElementById(viewId);
+    if (view) {
+      view.style.display = 'none';
+    }
+  });
   
-  // hide secondary nav for start view
+  // Hide all sub-views when switching main views
+  const allSubViews = ['tasksView', 'overviewView', 'milestonesView', 'completedView', 'teamsView'];
+  allSubViews.forEach(viewId => {
+    const view = document.getElementById(viewId);
+    if (view) {
+      view.style.display = 'none';
+    }
+  });
+  
+  // Hide/show secondary nav based on view
   const secondaryNav = document.querySelector('.secondary-nav');
   if (viewName === 'start') {
-    secondaryNav.style.display = 'none';
+    if (secondaryNav) {
+      secondaryNav.style.display = 'none';
+    }
   } else {
-    secondaryNav.style.display = 'block';
+    if (secondaryNav) {
+      secondaryNav.style.display = 'block';
+    }
   }
   
-  // remove active class from all nav links
+  // Remove active class from all main nav links
   document.querySelectorAll('.main-nav .nav-link').forEach(link => {
     link.classList.remove('active');
   });
   
-  // show selected view
+  // Remove active class from all sub nav links
+  document.querySelectorAll('.sub-nav-link').forEach(link => {
+    link.classList.remove('active');
+  });
+  
+  // Show selected main view
   const viewElement = document.getElementById(viewName + 'View');
   if (viewElement) {
     viewElement.style.display = 'block';
   }
   
-  // add active class to clicked nav link
+  // Add active class to clicked nav link
   const activeLink = document.querySelector(`[data-main-view="${viewName}"]`);
   if (activeLink) {
     activeLink.classList.add('active');
   }
   
-  // load view-specific content
+  // Load view-specific content
   if (viewName === 'planning') {
     loadPlanningView();
   } else if (viewName === 'projects') {
-    // show tasks view by default when switching to projects
-    switchView('tasks');
-    // re-setup add task buttons when switching to projects view
+    // Show tasks view by default when switching to projects
+    // Set active sub-nav link
+    const tasksSubLink = document.querySelector('[data-view="tasks"]');
+    if (tasksSubLink) {
+      tasksSubLink.classList.add('active');
+    }
+    // Show projects view (which contains the kanban board)
+    const projectsView = document.getElementById('projectsView');
+    if (projectsView) {
+      projectsView.style.display = 'block';
+    }
+    // Re-setup add task buttons when switching to projects view
     setTimeout(() => {
       if (typeof setupAddTaskButtons === 'function') {
         setupAddTaskButtons();
+      }
+      if (typeof renderTasks === 'function') {
+        renderTasks();
       }
     }, 100);
   }
@@ -60,9 +94,21 @@ window.loadOverviewStats = async function() {
   } catch (error) {
     tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
   }
+  
+  // Update status-based counts
   const total = tasks.length;
-  const completed = tasks.filter(t => t.completed).length;
-  const pending = total - completed;
+  const completed = tasks.filter(t => {
+    const status = t.status || (t.completed ? 'Completed' : 'Pending');
+    return status === 'Completed';
+  }).length;
+  const inProgress = tasks.filter(t => {
+    const status = t.status || (t.completed ? 'Completed' : 'Pending');
+    return status === 'In Progress';
+  }).length;
+  const pending = tasks.filter(t => {
+    const status = t.status || (t.completed ? 'Completed' : 'Pending');
+    return status === 'Pending';
+  }).length;
   
   document.getElementById('totalTasks').textContent = total;
   document.getElementById('completedTasks').textContent = completed;
@@ -74,7 +120,10 @@ window.loadOverviewStats = async function() {
   breakdown.innerHTML = '';
   
   categories.forEach(cat => {
-    const count = tasks.filter(t => t.category === cat && !t.completed).length;
+    const count = tasks.filter(t => {
+      const status = t.status || (t.completed ? 'Completed' : 'Pending');
+      return t.category === cat && status !== 'Completed';
+    }).length;
     const item = document.createElement('div');
     item.className = 'breakdown-item';
     item.innerHTML = `
@@ -83,7 +132,109 @@ window.loadOverviewStats = async function() {
     `;
     breakdown.appendChild(item);
   });
+  
+  // Load assigned tasks by team member
+  await loadAssignedTasksByMember();
 };
+
+// Load assigned tasks grouped by team member
+async function loadAssignedTasksByMember() {
+  try {
+    const tasks = await tasksAPI.getAll();
+    const users = await usersAPI.getAll();
+    
+    // Filter tasks that have assignees
+    const assignedTasks = tasks.filter(t => t.assignee_id);
+    
+    // Group by assignee
+    const tasksByMember = {};
+    assignedTasks.forEach(task => {
+      const assigneeId = task.assignee_id;
+      if (!tasksByMember[assigneeId]) {
+        const user = users.find(u => u.id === assigneeId);
+        tasksByMember[assigneeId] = {
+          user: user || { name: 'Unknown', email: 'N/A' },
+          tasks: []
+        };
+      }
+      tasksByMember[assigneeId].tasks.push(task);
+    });
+    
+    // Create or update the assigned tasks section
+    let assignedSection = document.getElementById('assignedTasksSection');
+    if (!assignedSection) {
+      assignedSection = document.createElement('div');
+      assignedSection.id = 'assignedTasksSection';
+      assignedSection.className = 'category-breakdown';
+      assignedSection.style.marginTop = '24px';
+      const overviewView = document.getElementById('overviewView');
+      if (overviewView) {
+        overviewView.querySelector('.completed-container').appendChild(assignedSection);
+      }
+    }
+    
+    if (Object.keys(tasksByMember).length === 0) {
+      assignedSection.innerHTML = `
+        <h3>Assigned Tasks by Team Member</h3>
+        <p style="color: #6b7280; padding: 20px;">No tasks have been assigned to team members yet.</p>
+      `;
+      return;
+    }
+    
+    assignedSection.innerHTML = `
+      <h3>Assigned Tasks by Team Member</h3>
+      <div class="assigned-tasks-list">
+        ${Object.values(tasksByMember).map(memberData => {
+          const statusCounts = {
+            Pending: memberData.tasks.filter(t => {
+              const status = t.status || (t.completed ? 'Completed' : 'Pending');
+              return status === 'Pending';
+            }).length,
+            'In Progress': memberData.tasks.filter(t => {
+              const status = t.status || (t.completed ? 'Completed' : 'Pending');
+              return status === 'In Progress';
+            }).length,
+            Completed: memberData.tasks.filter(t => {
+              const status = t.status || (t.completed ? 'Completed' : 'Pending');
+              return status === 'Completed';
+            }).length
+          };
+          
+          return `
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: white;">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                <div>
+                  <div style="font-weight: 500; font-size: 16px;">${memberData.user.name}</div>
+                  <div style="font-size: 12px; color: #6b7280;">${memberData.user.email}</div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-size: 14px; font-weight: 500;">${memberData.tasks.length} task${memberData.tasks.length !== 1 ? 's' : ''}</div>
+                  <div style="font-size: 11px; color: #6b7280;">
+                    ${statusCounts.Pending} Pending • ${statusCounts['In Progress']} In Progress • ${statusCounts.Completed} Completed
+                  </div>
+                </div>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                ${memberData.tasks.slice(0, 5).map(task => {
+                  const status = task.status || (task.completed ? 'Completed' : 'Pending');
+                  const statusColor = status === 'Completed' ? '#10b981' : status === 'In Progress' ? '#3b82f6' : '#6b7280';
+                  return `
+                    <div style="padding: 6px 10px; background: #f3f4f6; border-radius: 4px; font-size: 12px; border-left: 3px solid ${statusColor};">
+                      ${task.title}
+                    </div>
+                  `;
+                }).join('')}
+                ${memberData.tasks.length > 5 ? `<span style="font-size: 11px; color: #6b7280; padding: 6px 10px;">+${memberData.tasks.length - 5} more</span>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  } catch (error) {
+    console.error('Failed to load assigned tasks:', error);
+  }
+}
 
 // load planning view
 async function loadPlanningView() {
@@ -203,12 +354,35 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.main-nav .nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       const view = link.getAttribute('data-main-view');
       if (view) {
         switchMainView(view);
       }
     });
   });
+  
+  // setup sub-navigation (Overview, Tasks, Teams, etc.)
+  document.querySelectorAll('.sub-nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const view = link.getAttribute('data-view');
+      if (view && typeof switchView === 'function') {
+        switchView(view);
+      }
+    });
+  });
+  
+  // setup logo click to go to start view
+  const logoLink = document.getElementById('logoLink');
+  if (logoLink) {
+    logoLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      switchMainView('start');
+    });
+  }
   
   // setup user dropdown
   setupUserDropdown();
@@ -221,7 +395,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // default to start view, but show secondary nav for projects
   const secondaryNav = document.querySelector('.secondary-nav');
-  secondaryNav.style.display = 'none';
+  if (secondaryNav) {
+    secondaryNav.style.display = 'none';
+  }
   switchMainView('start');
 });
 
