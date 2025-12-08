@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Task Collaboration Board - Project Documentation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+        }
+        h1 {
+            color: #6366f1;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+            page-break-after: avoid;
+        }
+        h2 {
+            color: #4f46e5;
+            margin-top: 30px;
+            page-break-after: avoid;
+        }
+        h3 {
+            color: #6366f1;
+            margin-top: 20px;
+            page-break-after: avoid;
+        }
+        h4 {
+            color: #7c3aed;
+            margin-top: 15px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        .header h1 {
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+        .meta {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        .figure {
+            text-align: center;
+            margin: 30px 0;
+            page-break-inside: avoid;
+        }
+        .figure-caption {
+            font-style: italic;
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            page-break-inside: avoid;
+        }
+        ul, ol {
+            margin-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #6366f1;
+            color: white;
+        }
+        .toc {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+            page-break-after: avoid;
+        }
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        .toc a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .section {
+            page-break-before: auto;
+            margin-top: 30px;
+        }
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CAMPUS TASK COLLABORATION BOARD</h1>
+        <div class="meta">
+            <strong>Project Documentation</strong><br>
+            <strong>Developer:</strong> Cyril Michael Dagher<br>
+            <strong>Student ID:</strong> 10012300026<br>
+            <strong>Date:</strong> December 2025
+        </div>
+    </div>
+
+    <div class="toc">
+        <h2>TABLE OF CONTENTS</h2>
+        <ul>
+            <li><a href="#overview">1. Project Overview</a></li>
+            <li><a href="#what-i-was-building">2. What I Was Trying to Build</a></li>
+            <li><a href="#features">3. Features</a></li>
+            <li><a href="#tech-stack">4. Tech Stack</a></li>
+            <li><a href="#architecture">5. How It's Built (Architecture)</a></li>
+            <li><a href="#database">6. Database Design</a></li>
+            <li><a href="#api">7. API Documentation</a></li>
+            <li><a href="#frontend">8. Frontend Code</a></li>
+            <li><a href="#backend">9. Backend Code</a></li>
+            <li><a href="#security">10. Security</a></li>
+            <li><a href="#setup">11. How to Set It Up</a></li>
+            <li><a href="#usage">12. How to Use It</a></li>
+            <li><a href="#testing">13. Testing</a></li>
+            <li><a href="#problems">14. Problems I Ran Into</a></li>
+            <li><a href="#future">15. Things I Want to Add Later</a></li>
+            <li><a href="#final">16. Final Thoughts</a></li>
+        </ul>
+    </div>
+
+    <div class="section" id="overview">
+        <h2>1. PROJECT OVERVIEW</h2>
+        <p>So this is a task management web app I built for managing tasks around campus. It's basically a Kanban board (like Trello) where you can create tasks and organize them into different categories: Academics, Recreational, Sports, and Events.</p>
+        <p>The idea was to make something that students and staff could use to collaborate on tasks. It's pretty simple - you can create tasks, put them in categories, mark them as done, and delete them if you need to. The app also supports team collaboration where students can create teams, join teams using codes, assign tasks to team members, and track progress together.</p>
+        <p>This was my final exam project for my web technologies class.</p>
+        
+        <div class="figure">
+            <img src="images/deployedfrontend.png" alt="Deployed Frontend">
+            <div class="figure-caption">Figure 1: The deployed frontend showing the Tasks Board interface</div>
+        </div>
+    </div>
+
+    <div class="section" id="what-i-was-building">
+        <h2>2. WHAT I WAS TRYING TO BUILD</h2>
+        <p>My main goals were:</p>
+        <ul>
+            <li>Make a task management system that's easy to use</li>
+            <li>Add user login/registration (with secure passwords and Student ID validation)</li>
+            <li>Create a board interface where you can see all your tasks</li>
+            <li>Let users organize tasks by category</li>
+            <li>Track which tasks are done (with status: Pending, In Progress, Completed)</li>
+            <li>Build a REST API for the backend</li>
+            <li>Use PostgreSQL to store everything</li>
+            <li>Add team collaboration features</li>
+            <li>Allow task assignment to team members</li>
+        </ul>
+        <p>I think I got most of these done, though some features are still basic.</p>
+    </div>
+
+    <div class="section" id="features">
+        <h2>3. FEATURES</h2>
+        
+        <h3>3.1 Login/Registration</h3>
+        <ul>
+            <li>You can register with your name, email, Student ID (8-12 digits), and password</li>
+            <li>Email has to be unique (can't register twice with same email)</li>
+            <li>Student ID must be 8-12 digits (validated on both frontend and backend)</li>
+            <li>Passwords are hashed (not stored in plain text)</li>
+            <li>Login works with email and password</li>
+            <li>Once logged in, you stay logged in (using localStorage)</li>
+        </ul>
+
+        <div class="figure">
+            <img src="images/registerusertest.png" alt="User Registration">
+            <div class="figure-caption">Figure 2: User registration interface with Student ID validation</div>
+        </div>
+
+        <div class="figure">
+            <img src="images/uilogintest.png" alt="UI Login">
+            <div class="figure-caption">Figure 3: Login interface</div>
+        </div>
+
+        <h3>3.2 Task Management</h3>
+        <ul>
+            <li>Create tasks with title, description, category, tags, time estimates, status, assignee, and team</li>
+            <li>View all tasks in a board format (like Kanban)</li>
+            <li>Mark tasks as completed (just check the box or change status)</li>
+            <li>Delete tasks (with a confirmation popup)</li>
+            <li>See all completed tasks in a separate section</li>
+            <li>Change task status with a dropdown on each task card</li>
+        </ul>
+
+        <div class="figure">
+            <img src="images/uitaskcreated.png" alt="Task Created">
+            <div class="figure-caption">Figure 4: Creating a new task in the UI</div>
+        </div>
+
+        <div class="figure">
+            <img src="images/uitaskcreatedandupdated.png" alt="Task Created and Updated">
+            <div class="figure-caption">Figure 5: Task created and displayed on the board with status management</div>
+        </div>
+
+        <div class="figure">
+            <img src="images/taskcreatedb.png" alt="Task in Database">
+            <div class="figure-caption">Figure 6: Task data stored in PostgreSQL database</div>
+        </div>
+
+        <h3>3.3 Dashboard</h3>
+        <p>Overview page shows stats about tasks, assigned tasks by member, Projects view is the main board, Completed section, Teams section, and more.</p>
+
+        <h3>3.4 Teams & Collaboration</h3>
+        <p>Create teams, join with codes, view members with task statistics, and manage team collaboration.</p>
+    </div>
+
+    <div class="section" id="tech-stack">
+        <h2>4. TECH STACK</h2>
+        <h3>Frontend:</h3>
+        <ul>
+            <li><strong>HTML5</strong> - Basic structure</li>
+            <li><strong>CSS3</strong> - Styling</li>
+            <li><strong>JavaScript</strong> - All the logic</li>
+            <li><strong>Fetch API</strong> - To talk to the backend</li>
+            <li><strong>LocalStorage</strong> - Store some data on the client side</li>
+        </ul>
+
+        <h3>Backend:</h3>
+        <ul>
+            <li><strong>Node.js</strong> - JavaScript on the server</li>
+            <li><strong>Express.js</strong> - Makes building APIs way easier</li>
+            <li><strong>PostgreSQL</strong> - Database</li>
+            <li><strong>bcryptjs</strong> - For hashing passwords</li>
+            <li><strong>CORS</strong> - so frontend can talk to backend</li>
+            <li><strong>dotenv</strong> - for environment variables</li>
+        </ul>
+
+        <div class="figure">
+            <img src="images/renderbackenddeploy.png" alt="Render Backend">
+            <div class="figure-caption">Figure 7: Backend deployment on Render</div>
+        </div>
+
+        <div class="figure">
+            <img src="images/database.png" alt="Database Schema">
+            <div class="figure-caption">Figure 8: Database schema and tables</div>
+        </div>
+
+        <div class="figure">
+            <img src="images/dbafterdeploy.png" alt="Database After Deploy">
+            <div class="figure-caption">Figure 9: Database tables after deployment</div>
+        </div>
+    </div>
+
+    <div class="section" id="architecture">
+        <h2>5. HOW IT'S BUILT (ARCHITECTURE)</h2>
+        <p>I built it in three layers: Frontend, Backend, and Database. The data flows from user actions → frontend → backend API → database → response back to frontend → UI update.</p>
+    </div>
+
+    <div class="section" id="database">
+        <h2>6. DATABASE DESIGN</h2>
+        <p>I have four main tables: <code>users</code>, <code>tasks</code>, <code>teams</code>, and <code>team_members</code>. Each with proper relationships and foreign keys for data integrity.</p>
+    </div>
+
+    <div class="section" id="api">
+        <h2>7. API DOCUMENTATION</h2>
+        <p>Base URL: <code>http://localhost:3000/api</code> or <code>https://campus-task-collab-board-gqd5.onrender.com/api</code></p>
+        <p>Endpoints include authentication, task CRUD operations, team management, and user endpoints.</p>
+
+        <div class="figure">
+            <img src="images/healthtest.png" alt="Health Check">
+            <div class="figure-caption">Figure 10: API health check endpoint test</div>
+        </div>
+    </div>
+
+    <div class="section" id="frontend">
+        <h2>8. FRONTEND CODE</h2>
+        <p>The frontend is organized into modules: <code>api.js</code>, <code>auth.js</code>, <code>tasks.js</code>, <code>teams.js</code>, <code>dashboard.js</code>, and <code>notifications.js</code>.</p>
+    </div>
+
+    <div class="section" id="backend">
+        <h2>9. BACKEND CODE</h2>
+        <p>Main Express server with route handlers for all operations, plus database configuration with connection pooling and SSL support.</p>
+    </div>
+
+    <div class="section" id="security">
+        <h2>10. SECURITY</h2>
+        <p>Passwords hashed with bcryptjs, input validation, SQL injection prevention with parameterized queries, and proper database security measures.</p>
+    </div>
+
+    <div class="section" id="setup">
+        <h2>11. HOW TO SET IT UP</h2>
+        <p>Requires Node.js, npm, PostgreSQL, and a browser. Backend setup involves installing dependencies, configuring database, creating tables, and starting the server. Frontend can be served with any local server or deployed to GitHub Pages.</p>
+    </div>
+
+    <div class="section" id="usage">
+        <h2>12. HOW TO USE IT</h2>
+        <p>Register with Student ID, login, create tasks, manage them, create or join teams, and navigate through different views. Pretty straightforward!</p>
+    </div>
+
+    <div class="section" id="testing">
+        <h2>13. TESTING</h2>
+        <p>Tested authentication, tasks, teams, and UI functionality. Used Thunder Client for API testing. Everything works, though there might be edge cases.</p>
+    </div>
+
+    <div class="section" id="problems">
+        <h2>14. PROBLEMS I RAN INTO</h2>
+        <p>Main issues included database connection, password hashing, frontend-backend communication, task state management, modal issues, CORS, route ordering, task filtering, and team functionality. All solved with research and persistence!</p>
+    </div>
+
+    <div class="section" id="future">
+        <h2>15. THINGS I WANT TO ADD LATER</h2>
+        <p>Proper JWT tokens, password reset, due dates, file uploads, comments, search/filter, drag and drop, dark mode, real-time updates, and more testing.</p>
+    </div>
+
+    <div class="section" id="final">
+        <h2>16. FINAL THOUGHTS</h2>
+        <p>This project was a lot of work, but I learned so much. I'm proud of the authentication, Kanban board, team collaboration, and deployment. The app works well for what it is, and I'm happy with how it turned out!</p>
+        <p><strong>This was my final exam for my web technologies class, and I'm pretty happy with how it turned out. Hope you like it!</strong></p>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 2px solid #6366f1;">
+        <p><strong>END OF DOCUMENTATION</strong></p>
+        <p><strong>Project by:</strong> Cyril Michael Dagher<br>
+        <strong>Student ID:</strong> 10012300026<br>
+        <strong>Date:</strong> December 2025</p>
+    </div>
+</body>
+</html>
+

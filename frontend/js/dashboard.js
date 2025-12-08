@@ -289,6 +289,11 @@ function setupUserDropdown() {
   if (user.name) {
     document.getElementById('userName').textContent = user.name;
     document.getElementById('userEmail').textContent = user.email || '';
+    // set avatar to first letter of name
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) {
+      avatar.textContent = user.name.charAt(0).toUpperCase();
+    }
   }
   
   // show/hide dropdown
