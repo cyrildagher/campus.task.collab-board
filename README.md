@@ -25,15 +25,23 @@ This is a full-stack web application for campus task collaboration. Students can
 
 ### Frontend
 - **GitHub Pages:** [https://cyrildagher.github.io/campus.task.collab-board/](https://cyrildagher.github.io/campus.task.collab-board/)
-- **GitHub Repository:** [Link to your frontend repository]
+- **GitHub Repository:** [https://github.com/cyrildagher/campus.task.collab-board/tree/main/frontend]
 
 ### Backend
 - **Render:** [https://campus-task-collab-board-gqd5.onrender.com](https://campus-task-collab-board-gqd5.onrender.com)
 - **API Base URL:** [https://campus-task-collab-board-gqd5.onrender.com/api](https://campus-task-collab-board-gqd5.onrender.com/api)
-- **GitHub Repository:** [Link to your backend repository]
+- **GitHub Repository:** [https://github.com/cyrildagher/campus.task.collab-board/tree/main/backend]
 
 ### Database
 - **PostgreSQL:** Hosted on Render (included with backend deployment)
+
+---
+
+## Documentation
+
+For more details (screenshots, database schema, testing evidence, and full write-up), check the `documentation/` folder:
+- `documentation/PROJECT_DOCUMENTATION.md`
+- `documentation/PROJECT_DOCUMENTATION.html`
 
 ---
 
@@ -64,26 +72,26 @@ So this is basically a collaboration board for students to manage tasks together
 ## Feature Checklist
 
 ### User Registration & Authentication
-- ✅ Secure user registration and login
-- ✅ Students only restriction (Student ID validation required)
-- ✅ Allow users to create or join a project team
+- [X] Secure user registration and login
+- [X] Students only restriction (Student ID validation required)
+- [X] Allow users to create or join a project team
 
 ### Task Management
-- ✅ Create project tasks
-- ✅ Assign project tasks to team members
-- ✅ Update project tasks
-- ✅ Delete project tasks
-- ✅ Display tasks by status (Pending, In Progress, Completed)
+- [X] Create project tasks
+- [X] Assign project tasks to team members
+- [X] Update project tasks
+- [X] Delete project tasks
+- [X] Display tasks by status (Pending, In Progress, Completed)
 
 ### Team Dashboard
-- ✅ Show all team members
-- ✅ Show assigned tasks for each team member
-- ✅ Include summary charts or indicators (total tasks, completed count)
+- [X] Show all team members
+- [X] Show assigned tasks for each team member
+- [X] Include summary charts or indicators (total tasks, completed count)
 
 ### Admin Panel / Deployment
-- ✅ Host backend on Render (Node.js + PostgreSQL)
-- ✅ Host frontend on GitHub Pages
-- ✅ Integrate with backend API
+- [X] Host backend on Render (Node.js + PostgreSQL)
+- [X] Host frontend on GitHub Pages
+- [X] Integrate with backend API
 
 ---
 
