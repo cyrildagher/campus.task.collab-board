@@ -508,3 +508,23 @@ If you want more technical details, check out `Documentation.txt`. It has:
 ---
 
 **Note:** This is a school project, so it's not perfect. But I learned a lot building it!
+
+---
+
+## References & Further Reading
+
+### Project documentation (this repo)
+- [Project documentation (Markdown)](documentation/PROJECT_DOCUMENTATION.md)
+- [Project documentation (HTML)](documentation/PROJECT_DOCUMENTATION.html)
+- [Documentation images/screenshots](documentation/images/)
+
+### External documentation
+- [Node.js Documentation](https://nodejs.org/en/docs)
+- [Express.js Documentation](https://expressjs.com/)
+- [node-postgres (`pg`) Documentation](https://node-postgres.com/)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [bcryptjs Documentation](https://www.npmjs.com/package/bcryptjs)
+- [CORS (Express middleware) Documentation](https://www.npmjs.com/package/cors)
+- [Fetch API (MDN)](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- [GitHub Pages Documentation](https://docs.github.com/en/pages)
+- [Render Documentation](https://render.com/docs)
